@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | My Profile</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        /* ── HEADER ── */
+        .header { background: white; padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ccc; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; }
+        .logo img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+        .logo h1 { margin: 0; color: #e91e63; font-size: 22px; }
+        .logo span { color: #555; font-size: 14px; }
+        .nav a { margin: 0 12px; text-decoration: none; color: #e91e63; font-weight: bold; font-size: 14px; }
+        .nav a:hover { text-decoration: underline; }
+        .nav a.active { border-bottom: 2px solid #e91e63; padding-bottom: 2px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .user-chip { display: flex; align-items: center; gap: 8px; background: #fce4ec; color: #e91e63; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .user-chip .avatar { width: 28px; height: 28px; background: #e91e63; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .btn-logout { padding: 7px 16px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn-logout:hover { background: #c2185b; }
+
+        /* ── PAGE HEADER ── */
+        .page-header { background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 28px 40px; }
+        .page-header h2 { font-size: 24px; margin-bottom: 4px; }
+        .page-header p { font-size: 13px; opacity: 0.88; }
+
+        /* ── MAIN ── */
+        .main { padding: 28px 40px 80px; }
+        .section-title { font-size: 17px; color: #333; font-weight: bold; margin-bottom: 16px; border-left: 4px solid #e91e63; padding-left: 10px; }
+        .panel { background: white; border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+
+        /* ── PROFILE CARD ── */
+        .profile-top { display: flex; align-items: center; gap: 28px; margin-bottom: 28px; flex-wrap: wrap; }
+        .profile-avatar-wrap { position: relative; }
+        .profile-avatar {
+            width: 100px; height: 100px;
+            background: #e91e63;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 38px; font-weight: bold; color: white;
+            border: 4px solid #fce4ec;
+        }
+        .avatar-edit-btn {
+            position: absolute; bottom: 2px; right: 2px;
+            width: 28px; height: 28px;
+            background: white; border-radius: 50%;
+            border: 2px solid #e91e63;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 13px;
+        }
+        .profile-info h3 { font-size: 22px; color: #222; margin-bottom: 4px; }
+        .profile-info .cust-id { font-size: 13px; color: #aaa; margin-bottom: 6px; }
+        .profile-info .acc-since { font-size: 13px; color: #555; }
+        .profile-badges { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .profile-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-kyc  { background: #e8f5e9; color: #388e3c; }
+        .badge-prem { background: #fce4ec; color: #e91e63; }
+        .badge-2fa  { background: #e3f2fd; color: #1565c0; }
+
+        /* ── TABS ── */
+        .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 22px; }
+        .tab { padding: 10px 22px; cursor: pointer; font-size: 14px; color: #888; font-weight: bold; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+        .tab.active { color: #e91e63; border-bottom-color: #e91e63; }
+        .tab:hover:not(.active) { color: #555; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── FORM FIELDS ── */
+        .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 24px; }
+        .form-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+        .form-field label { font-size: 12px; color: #888; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px; }
+        .form-field input, .form-field select, .form-field textarea {
+            padding: 9px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            outline: none;
+            color: #333;
+        }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: #e91e63; }
+        .form-field input[readonly] { background: #f9f9f9; color: #888; cursor: not-allowed; }
+        .form-field textarea { resize: vertical; min-height: 72px; }
+
+        .btn-pink { padding: 10px 28px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .btn-pink:hover { background: #c2185b; }
+        .btn-gray { padding: 10px 22px; background: #aaa; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; margin-left: 8px; }
+        .btn-gray:hover { background: #888; }
+
+        .msg { display: none; padding: 12px 16px; border-radius: 4px; margin-top: 14px; font-size: 13px; }
+        .msg.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #b2dfdb; display: block; }
+        .msg.error   { background: #fce4ec; color: #c62828; border: 1px solid #f5c6c6; display: block; }
+
+        /* ── SECURITY ── */
+        .security-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f0f0f0; }
+        .security-item:last-child { border-bottom: none; }
+        .sec-left { display: flex; align-items: center; gap: 14px; }
+        .sec-icon { width: 40px; height: 40px; border-radius: 50%; background: #fce4ec; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .sec-title { font-size: 14px; font-weight: bold; color: #333; }
+        .sec-desc { font-size: 12px; color: #aaa; margin-top: 2px; }
+        .sec-status { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .sec-enabled  { background: #e8f5e9; color: #388e3c; }
+        .sec-disabled { background: #f5f5f5; color: #999; }
+        .toggle-switch { width: 44px; height: 24px; background: #e91e63; border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; }
+        .toggle-switch.off { background: #ccc; }
+        .toggle-switch::after { content: ''; position: absolute; width: 18px; height: 18px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; }
+        .toggle-switch.off::after { left: 3px; }
+        .toggle-switch:not(.off)::after { left: 23px; }
+
+        /* ── STATEMENTS TABLE ── */
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: #e91e63; color: white; }
+        thead td { padding: 10px 14px; font-size: 13px; font-weight: bold; }
+        tbody tr { border-bottom: 1px solid #f0f0f0; }
+        tbody td { padding: 10px 14px; font-size: 13px; color: #333; }
+        tbody tr:hover { background: #fafafa; }
+        .dl-btn { padding: 5px 14px; background: #fce4ec; color: #e91e63; border: none; border-radius: 3px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .dl-btn:hover { background: #e91e63; color: white; }
+
+        /* ── FOOTER ── */
+        .footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #555; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="dashboard.html">DASHBOARD</a>
+        <a href="transfer.html">TRANSFER</a>
+        <a href="transactions.html">TRANSACTIONS</a>
+        <a href="loans.html">LOANS</a>
+        <a href="profile.html" class="active">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-chip">
+            <div class="avatar">RJ</div>
+            Rahul Joshi
+        </div>
+        <button class="btn-logout" onclick="if(confirm('Logout from your account?')) window.location.href='DAGLOGIN.html'">Logout</button>
+    </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h2>👤 My Profile</h2>
+    <p>Manage your personal information, security settings, and download account statements.</p>
+</div>
+
+<div class="main">
+
+    <!-- PROFILE SUMMARY -->
+    <div class="panel">
+        <div class="profile-top">
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar" id="top-initials">RJ</div>
+                <div class="avatar-edit-btn" title="Change Photo">✏️</div>
+            </div>
+            <div class="profile-info">
+                <h3 id="top-fullname">Rahul Joshi</h3>
+                <div class="cust-id" id="top-custid">Customer ID: KPB-CUST-00472 &nbsp;|&nbsp; Since: January 2017</div>
+                <div class="acc-since" id="top-contact">📧 rahul.joshi@email.com &nbsp; 📱 +91 98765 43210</div>
+                <div class="profile-badges">
+                    <span class="profile-badge badge-kyc">✔ KYC Verified</span>
+                    <span class="profile-badge badge-prem">★ Premium Member</span>
+                    <span class="profile-badge badge-2fa">🔒 2FA Enabled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="panel">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('personal')">Personal Info</div>
+            <div class="tab" onclick="switchTab('security')">Security</div>
+            <div class="tab" onclick="switchTab('kyc')">KYC Details</div>
+            <div class="tab" onclick="switchTab('statements')">Statements</div>
+        </div>
+
+        <!-- TAB: PERSONAL INFO -->
+        <div class="tab-content active" id="tab-personal">
+            <div class="form-grid-3" style="margin-bottom:16px;">
+                <div class="form-field">
+                    <label>Full Name</label>
+                    <input type="text" id="prof-fname" value="">
+                </div>
+                <div class="form-field">
+                    <label>Username</label>
+                    <input type="text" id="prof-uname" value="" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Date of Birth</label>
+                    <input type="date" id="prof-dob" value="" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Gender</label>
+                    <input type="text" id="prof-gender" value="" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Email Address</label>
+                    <input type="email" id="prof-email" value="" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="prof-mobile" value="">
+                </div>
+                <div class="form-field">
+                    <label>Occupation</label>
+                    <input type="text" id="prof-occ" value="">
+                </div>
+                <div class="form-field">
+                    <label>Annual Income (₹)</label>
+                    <input type="number" id="prof-income" value="">
+                </div>
+                <div class="form-field">
+                    <label>Role</label>
+                    <input type="text" id="prof-role" value="" readonly style="text-transform: capitalize;">
+                </div>
+            </div>
+
+            <div class="form-field" style="margin-bottom:16px;">
+                <label>Residential Address</label>
+                <textarea id="prof-addr"></textarea>
+            </div>
+
+            <div id="personal-msg" class="msg"></div>
+            <button class="btn-pink" onclick="savePersonal()">Save Changes</button>
+            <button class="btn-gray" onclick="document.getElementById('personal-msg').style.display='none'">Cancel</button>
+        </div>
+
+        <!-- TAB: SECURITY -->
+        <div class="tab-content" id="tab-security">
+            <div class="security-item">
+                <div class="sec-left">
+                    <div class="sec-icon">🔑</div>
+                    <div>
+                        <div class="sec-title">Change Password</div>
+                        <div class="sec-desc">Last changed: 3 months ago</div>
+                    </div>
+                </div>
+                <button class="btn-pink" onclick="showChangePassword()">Change</button>
+            </div>
+
+            <div id="change-pw-form" style="display:none; background:#fafafa; border-radius:6px; padding:18px; margin:10px 0;">
+                <div class="form-grid-2" style="margin-bottom:14px;">
+                    <div class="form-field"><label>Current Password</label><input type="password" id="cur-pw" placeholder="Enter current password"></div>
+                    <div class="form-field"><label>New Password</label><input type="password" id="new-pw" placeholder="Min 8 characters"></div>
+                    <div class="form-field"><label>Confirm New Password</label><input type="password" id="con-pw" placeholder="Re-enter new password"></div>
+                </div>
+                <div id="pw-msg" class="msg"></div>
+                <button class="btn-pink" onclick="changePassword()">Update Password</button>
+                <button class="btn-gray" onclick="document.getElementById('change-pw-form').style.display='none'">Cancel</button>
+            </div>
+
+            <div class="security-item">
+                <div class="sec-left">
+                    <div class="sec-icon">📱</div>
+                    <div>
+                        <div class="sec-title">Two-Factor Authentication</div>
+                        <div class="sec-desc">OTP via registered mobile</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="sec-status sec-enabled" id="tfa-status">Enabled</span>
+                    <div class="toggle-switch" id="tfa-toggle" onclick="toggleTFA()" style="display:inline-block;vertical-align:middle;margin-left:10px;"></div>
+                </div>
+            </div>
+            <div class="security-item">
+                <div class="sec-left">
+                    <div class="sec-icon">🛡️</div>
+                    <div>
+                        <div class="sec-title">Transaction PIN</div>
+                        <div class="sec-desc">Required for every fund transfer</div>
+                    </div>
+                </div>
+                <button class="btn-pink" onclick="alert('Transaction PIN update OTP sent to +91 98765 43210')">Reset PIN</button>
+            </div>
+            <div class="security-item">
+                <div class="sec-left">
+                    <div class="sec-icon">💻</div>
+                    <div>
+                        <div class="sec-title">Login Activity</div>
+                        <div class="sec-desc">Last login: 12 Apr 2026, 4:15 PM from Indore, MP</div>
+                    </div>
+                </div>
+                <button class="btn-pink" onclick="alert('All other sessions have been logged out successfully.')">Logout All Devices</button>
+            </div>
+        </div>
+
+        <!-- TAB: KYC -->
+        <div class="tab-content" id="tab-kyc">
+            <div id="kyc-status" style="background:#e8f5e9; border:1px solid #b2dfdb; border-radius:6px; padding:12px 16px; margin-bottom:20px; color:#2e7d32; font-size:13px;">
+                ✔ Your KYC verification is complete and up-to-date. Last verified on 10 Jan 2026.
+            </div>
+            <div class="form-grid-2" style="margin-bottom:16px;">
+                <div class="form-field">
+                    <label>PAN Card Number</label>
+                    <input type="text" value="ABCPJ1234K" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Aadhaar Number</label>
+                    <input type="text" value="XXXX-XXXX-6789" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Nationality</label>
+                    <input type="text" value="Indian" readonly>
+                </div>
+                <div class="form-field">
+                    <label>Country of Residence</label>
+                    <input type="text" value="India" readonly>
+                </div>
+                <div class="form-field">
+                    <label>State</label>
+                    <input type="text" value="Madhya Pradesh" readonly>
+                </div>
+                <div class="form-field">
+                    <label>City</label>
+                    <input type="text" value="Indore" readonly>
+                </div>
+                <div class="form-field">
+                    <label>PIN Code</label>
+                    <input type="text" value="452001" readonly>
+                </div>
+                <div class="form-field">
+                    <label>KYC Status</label>
+                    <input type="text" value="Verified ✔" readonly style="color:#388e3c; font-weight:bold;">
+                </div>
+            </div>
+            <p style="font-size:13px; color:#888; margin-bottom:14px;">To update KYC documents, please visit your nearest Kingsley Private Bank branch with original documents.</p>
+            <button class="btn-pink" onclick="alert('A KYC update request has been raised. Our team will contact you within 2 working days.')">Request KYC Update</button>
+        </div>
+
+        <!-- TAB: STATEMENTS -->
+        <div class="tab-content" id="tab-statements">
+            <p style="font-size:13px; color:#555; margin-bottom:16px;">Download your official account statements in PDF format for any period.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Statement Period</td>
+                        <td>Account</td>
+                        <td>Transactions</td>
+                        <td>Generated On</td>
+                        <td>Download</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>March 2026</td><td>Savings – 4821</td><td>18</td><td>01 Apr 2026</td><td><button class="dl-btn" onclick="alert('Downloading March 2026 Statement...')">⬇ Download</button></td></tr>
+                    <tr><td>February 2026</td><td>Savings – 4821</td><td>22</td><td>01 Mar 2026</td><td><button class="dl-btn" onclick="alert('Downloading February 2026 Statement...')">⬇ Download</button></td></tr>
+                    <tr><td>January 2026</td><td>Savings – 4821</td><td>15</td><td>01 Feb 2026</td><td><button class="dl-btn" onclick="alert('Downloading January 2026 Statement...')">⬇ Download</button></td></tr>
+                    <tr><td>Q4 2025 (Oct–Dec)</td><td>Savings – 4821</td><td>54</td><td>01 Jan 2026</td><td><button class="dl-btn" onclick="alert('Downloading Q4 2025 Statement...')">⬇ Download</button></td></tr>
+                    <tr><td>Q3 2025 (Jul–Sep)</td><td>Savings – 4821</td><td>48</td><td>01 Oct 2025</td><td><button class="dl-btn" onclick="alert('Downloading Q3 2025 Statement...')">⬇ Download</button></td></tr>
+                    <tr><td>March 2026</td><td>Current – 7734</td><td>9</td><td>01 Apr 2026</td><td><button class="dl-btn" onclick="alert('Downloading Current A/C March 2026 Statement...')">⬇ Download</button></td></tr>
+                </tbody>
+            </table>
+            <div style="margin-top:16px;">
+                <button class="btn-pink" onclick="alert('Custom date range statement request submitted. Will be emailed within 2 hours.')">Request Custom Period Statement</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer">
+    Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'DAGLOGIN.html';
+
+    async function loadProfile() {
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            if (data.success && data.profile) {
+                const p = data.profile;
+                
+                // Top card
+                document.getElementById('top-initials').textContent = p.full_name.substring(0, 2).toUpperCase();
+                document.getElementById('top-fullname').textContent = p.full_name;
+                document.getElementById('top-custid').textContent = `Customer ID: KPB-CUST-00${p.id}  |  Since: ${new Date(p.created_at).toLocaleDateString()}`;
+                document.getElementById('top-contact').innerHTML = `📧 ${p.email} &nbsp; 📱 ${p.mobile}`;
+                
+                // Update avatar in navbar
+                document.querySelector('.user-chip').innerHTML = `<div class="avatar">${p.full_name.substring(0, 2).toUpperCase()}</div> ${p.full_name}`;
+                
+                // Form fields
+                document.getElementById('prof-fname').value = p.full_name || '';
+                document.getElementById('prof-uname').value = p.username || '';
+                document.getElementById('prof-dob').value = p.dob ? p.dob.substring(0,10) : '';
+                document.getElementById('prof-gender').value = p.gender || '';
+                document.getElementById('prof-email').value = p.email || '';
+                document.getElementById('prof-mobile').value = p.mobile || '';
+                document.getElementById('prof-occ').value = p.occupation || '';
+                document.getElementById('prof-income').value = Number(p.annual_income) || '';
+                document.getElementById('prof-addr').value = p.address || '';
+                document.getElementById('prof-role').value = p.role || 'Customer';
+                
+                // Provide some mock KYC states dynamically if available
+                if(p.kyc_status === 'verified') {
+                    document.getElementById('kyc-status').innerHTML = '✔ Your KYC verification is complete.';
+                } else {
+                    document.getElementById('kyc-status').innerHTML = '⚠ Your KYC is ' + p.kyc_status;
+                    document.getElementById('kyc-status').style.color = '#c62828';
+                    document.getElementById('kyc-status').style.backgroundColor = '#fce4ec';
+                    document.getElementById('kyc-status').style.borderColor = '#f5c6c6';
+                }
+            } else {
+                localStorage.removeItem('token');
+                window.location.href = 'DAGLOGIN.html';
+            }
+        } catch (e) {
+            console.error('Error loading profile', e);
+        }
+    }
+
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    async function savePersonal() {
+        const msg = document.getElementById('personal-msg');
+        const data = {
+            full_name: document.getElementById('prof-fname').value,
+            mobile: document.getElementById('prof-mobile').value,
+            address: document.getElementById('prof-addr').value,
+            occupation: document.getElementById('prof-occ').value,
+            annual_income: document.getElementById('prof-income').value
+        };
+        
+        try {
+            const res = await fetch('http://localhost:5000/api/user/profile', {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            
+            if(result.success) {
+                msg.className = 'msg success';
+                msg.textContent = '✔ Profile updated successfully.';
+                loadProfile(); // reload dynamically
+            } else {
+                msg.className = 'msg error';
+                msg.textContent = result.message || 'Error updating profile';
+            }
+        } catch(e) {
+            msg.className = 'msg error';
+            msg.textContent = 'Connection error';
+        }
+    }
+
+    function showChangePassword() {
+        const form = document.getElementById('change-pw-form');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function changePassword() {
+        const cur = document.getElementById('cur-pw').value;
+        const np  = document.getElementById('new-pw').value;
+        const cp  = document.getElementById('con-pw').value;
+        const msg = document.getElementById('pw-msg');
+        if (!cur || !np || !cp) { msg.className='msg error'; msg.textContent='Please fill in all password fields.'; return; }
+        if (np.length < 6)      { msg.className='msg error'; msg.textContent='New password must be at least 6 characters.'; return; }
+        if (np !== cp)          { msg.className='msg error'; msg.textContent='New passwords do not match.'; return; }
+        try {
+            const res = await fetch('http://localhost:5000/api/user/change-password', {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentPassword: cur, newPassword: np })
+            });
+            const data = await res.json();
+            if (data.success) {
+                msg.className = 'msg success';
+                msg.textContent = '✔ ' + data.message;
+                ['cur-pw','new-pw','con-pw'].forEach(id => document.getElementById(id).value='');
+            } else {
+                msg.className = 'msg error';
+                msg.textContent = data.message || 'Failed to change password';
+            }
+        } catch(e) { msg.className='msg error'; msg.textContent='Server error'; }
+    }
+
+    let tfaOn = true;
+    function toggleTFA() {
+        tfaOn = !tfaOn;
+        const tog = document.getElementById('tfa-toggle');
+        const sta = document.getElementById('tfa-status');
+        if (tfaOn) { tog.classList.remove('off'); sta.className='sec-status sec-enabled'; sta.textContent='Enabled'; }
+        else       { tog.classList.add('off');    sta.className='sec-status sec-disabled'; sta.textContent='Disabled'; }
+    }
+
+    loadProfile();
+</script>
+</body>
+</html>

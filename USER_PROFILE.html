@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kingsley Private Bank | My Profile</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #F5F5F7; min-height: 100vh; }
+
+.header { background: white; display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.logo { display: flex; align-items: center; }
+.logo img { width: 70px; height: 70px; margin-right: 15px; border-radius: 50%; object-fit: cover; }
+.logo h1 { margin: 0; color: #FF3E6C; font-size: 22px; }
+.logo span { color: #666; font-size: 14px; }
+.nav a { margin: 0 12px; text-decoration: none; color: #FF3E6C; font-weight: bold; font-size: 14px; }
+.nav a:hover, .nav a.active { text-decoration: underline; }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #444; }
+.avatar-lg { width: 36px; height: 36px; border-radius: 50%; background: #FF3E6C; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn { padding: 7px 16px; border: none; background: #FF3E6C; color: white; cursor: pointer; border-radius: 4px; font-size: 14px; }
+.btn:hover { background: #e6335c; }
+.btn-outline { background: white; color: #FF3E6C; border: 1.5px solid #FF3E6C; }
+.btn-outline:hover { background: #fff0f3; }
+.btn-gray { background: #aaa; }
+.btn-gray:hover { background: #888; }
+.btn-green { background: #27ae60; }
+.btn-green:hover { background: #1e8449; }
+
+.page-title-bar { background: white; padding: 18px 40px; border-bottom: 1px solid #eee; }
+.page-title-bar h2 { color: #FF3E6C; font-size: 20px; }
+.page-title-bar p  { color: #888; font-size: 13px; margin-top: 4px; }
+
+.main { padding: 30px 40px 80px; display: flex; gap: 24px; align-items: flex-start; }
+.left-col  { width: 280px; flex-shrink: 0; }
+.right-col { flex: 1; }
+.section-heading { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 16px; border-left: 4px solid #FF3E6C; padding-left: 10px; }
+
+/* PROFILE CARD */
+.profile-card { background: white; border-radius: 10px; padding: 28px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; margin-bottom: 20px; }
+.profile-avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF3E6C, #c2185b); color: white; font-size: 32px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.profile-name { font-size: 18px; font-weight: bold; color: #222; }
+.profile-acct { font-size: 13px; color: #888; margin-top: 4px; }
+.profile-since { font-size: 12px; color: #aaa; margin-top: 2px; }
+.profile-badge { display: inline-block; padding: 4px 14px; background: #e8f8f0; color: #1e7e44; border-radius: 12px; font-size: 12px; font-weight: bold; margin-top: 10px; }
+
+/* SIDE MENU */
+.side-menu { background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+.side-menu-item { display: flex; align-items: center; gap: 10px; padding: 14px 18px; font-size: 14px; color: #444; cursor: pointer; border-bottom: 1px solid #f2f2f2; transition: background 0.15s; }
+.side-menu-item:last-child { border-bottom: none; }
+.side-menu-item:hover { background: #fff0f3; color: #FF3E6C; }
+.side-menu-item.active { background: #fff0f3; color: #FF3E6C; font-weight: bold; border-left: 3px solid #FF3E6C; }
+.side-menu-icon { font-size: 18px; width: 24px; }
+
+/* TABS CONTENT */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.panel { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; }
+.panel-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 18px; }
+
+/* PERSONAL INFO VIEW/EDIT */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.info-item { border-bottom: 1px solid #f5f5f5; padding-bottom: 12px; }
+.info-label { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.info-value { font-size: 14px; color: #222; font-weight: 500; }
+
+.form-row { display: flex; align-items: flex-start; margin-bottom: 14px; }
+.form-row label { width: 160px; font-size: 14px; color: #444; flex-shrink: 0; padding-top: 8px; }
+.form-row input, .form-row select, .form-row textarea { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; font-family: Arial; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #FF3E6C; }
+.btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+.msg { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 14px; display: none; }
+.msg.success { background: #e8f8f0; color: #1e7e44; border: 1px solid #b2dfc6; }
+.msg.error { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
+
+/* PASSWORD */
+.pw-wrap { position: relative; flex: 1; }
+.pw-wrap input { width: 100%; padding: 8px 36px 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; }
+.pw-wrap input:focus { border-color: #FF3E6C; }
+.eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: 15px; }
+.eye:hover { color: #FF3E6C; }
+.strength-bar { height: 4px; border-radius: 2px; margin-top: 5px; transition: width 0.3s, background 0.3s; }
+.strength-hint { font-size: 11px; color: #888; text-align: right; margin-top: 2px; }
+
+/* SETTINGS */
+.setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f2f2f2; }
+.setting-row:last-child { border-bottom: none; }
+.setting-label { font-size: 14px; color: #333; font-weight: 500; }
+.setting-desc { font-size: 12px; color: #aaa; margin-top: 3px; }
+.toggle { position: relative; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; inset: 0; background: #ccc; border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+.slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; }
+.toggle input:checked + .slider { background: #FF3E6C; }
+.toggle input:checked + .slider::before { transform: translateX(20px); }
+
+.footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div><h1>Kingsley Private</h1><span>Bank</span></div>
+    </div>
+    <div class="nav">
+        <a href="USER_HOME.html">DASHBOARD</a>
+        <a href="USER_ACCOUNTS.html">ACCOUNTS</a>
+        <a href="USER_LOANS.html">LOANS</a>
+        <a href="USER_PROFILE.html" class="active">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-badge"><div class="avatar-lg">JD</div><span>John Doe</span></div>
+        <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="page-title-bar">
+    <h2>My Profile</h2>
+    <p>View and manage your personal information and account settings</p>
+</div>
+
+<div class="main">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+        <div class="profile-card">
+            <div class="profile-avatar">JD</div>
+            <div class="profile-name">John Doe</div>
+            <div class="profile-acct">A/C: **** **** 4821</div>
+            <div class="profile-since">Member since Jan 2022</div>
+            <div class="profile-badge">&#10003; Verified Account</div>
+        </div>
+
+        <div class="side-menu">
+            <div class="side-menu-item active" onclick="switchTab('personal',this)">
+                <span class="side-menu-icon">&#128100;</span> Personal Info
+            </div>
+            <div class="side-menu-item" onclick="switchTab('edit',this)">
+                <span class="side-menu-icon">&#9999;</span> Edit Profile
+            </div>
+            <div class="side-menu-item" onclick="switchTab('password',this)">
+                <span class="side-menu-icon">&#128274;</span> Change Password
+            </div>
+            <div class="side-menu-item" onclick="switchTab('nominee',this)">
+                <span class="side-menu-icon">&#128101;</span> Nominee Details
+            </div>
+            <div class="side-menu-item" onclick="switchTab('settings',this)">
+                <span class="side-menu-icon">&#9881;</span> Account Settings
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+        <!-- PERSONAL INFO -->
+        <div class="tab-panel active" id="tab-personal">
+            <div class="panel">
+                <div class="panel-title">&#128100; Personal Information</div>
+                <div class="info-grid">
+                    <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">John Doe</div></div>
+                    <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">15 March 1992</div></div>
+                    <div class="info-item"><div class="info-label">Gender</div><div class="info-value">Male</div></div>
+                    <div class="info-item"><div class="info-label">Account Type</div><div class="info-value">Savings + Current</div></div>
+                    <div class="info-item"><div class="info-label">Mobile Number</div><div class="info-value">+91 98765 43210</div></div>
+                    <div class="info-item"><div class="info-label">Email Address</div><div class="info-value">john.doe@email.com</div></div>
+                    <div class="info-item"><div class="info-label">PAN Number</div><div class="info-value">ABCDE1234F</div></div>
+                    <div class="info-item"><div class="info-label">Aadhaar</div><div class="info-value">**** **** 9876</div></div>
+                    <div class="info-item" style="grid-column:1/-1;"><div class="info-label">Address</div><div class="info-value">123, Shivaji Nagar, Indore, Madhya Pradesh — 452001</div></div>
+                    <div class="info-item"><div class="info-label">IFSC Code</div><div class="info-value">KPB0001234</div></div>
+                    <div class="info-item"><div class="info-label">Branch</div><div class="info-value">Kingsley Main Branch</div></div>
+                </div>
+                <div class="btn-row" style="margin-top:20px;">
+                    <button class="btn" onclick="switchTab('edit', document.querySelectorAll('.side-menu-item')[1])">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDIT PROFILE -->
+        <div class="tab-panel" id="tab-edit">
+            <div class="panel">
+                <div class="panel-title">&#9999; Edit Personal Information</div>
+                <div id="editMsg" class="msg"></div>
+                <div class="form-row"><label>Full Name:</label><input type="text" id="editName" value="John Doe"></div>
+                <div class="form-row"><label>Date of Birth:</label><input type="date" id="editDob" value="1992-03-15"></div>
+                <div class="form-row">
+                    <label>Gender:</label>
+                    <select id="editGender">
+                        <option selected>Male</option><option>Female</option><option>Other</option>
+                    </select>
+                </div>
+                <div class="form-row"><label>Mobile Number:</label><input type="text" id="editMobile" value="+91 98765 43210"></div>
+                <div class="form-row"><label>Email Address:</label><input type="email" id="editEmail" value="john.doe@email.com"></div>
+                <div class="form-row"><label>Address:</label><textarea id="editAddress" rows="3">123, Shivaji Nagar, Indore, Madhya Pradesh — 452001</textarea></div>
+                <div class="form-row"><label>PAN Number:</label><input type="text" id="editPan" value="ABCDE1234F"></div>
+                <div class="btn-row">
+                    <button class="btn btn-gray" onclick="resetEdit()">Reset</button>
+                    <button class="btn" onclick="saveEdit()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHANGE PASSWORD -->
+        <div class="tab-panel" id="tab-password">
+            <div class="panel">
+                <div class="panel-title">&#128274; Change Password</div>
+                <div id="passMsg" class="msg"></div>
+                <div class="form-row">
+                    <label>Current Password:</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="curPass" placeholder="Enter current password">
+                        <span class="eye" onclick="togglePw('curPass')">&#128065;</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>New Password:</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="newPass" placeholder="Min. 8 characters" oninput="strengthCheck(this.value)">
+                        <span class="eye" onclick="togglePw('newPass')">&#128065;</span>
+                        <div class="strength-bar" id="sbar" style="width:0%;background:#ddd;"></div>
+                        <div class="strength-hint" id="shint"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <label>Confirm Password:</label>
+                    <div class="pw-wrap">
+                        <input type="password" id="confPass" placeholder="Re-enter new password">
+                        <span class="eye" onclick="togglePw('confPass')">&#128065;</span>
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button class="btn btn-gray" onclick="clearPass()">Clear</button>
+                    <button class="btn" onclick="savePass()">Update Password</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOMINEE -->
+        <div class="tab-panel" id="tab-nominee">
+            <div class="panel">
+                <div class="panel-title">&#128101; Nominee Details</div>
+                <div id="nomineeMsg" class="msg"></div>
+                <div class="info-grid" style="margin-bottom:20px;">
+                    <div class="info-item"><div class="info-label">Nominee Name</div><div class="info-value">Jane Doe</div></div>
+                    <div class="info-item"><div class="info-label">Relationship</div><div class="info-value">Spouse</div></div>
+                    <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">20 June 1994</div></div>
+                    <div class="info-item"><div class="info-label">Contact</div><div class="info-value">+91 87654 32109</div></div>
+                </div>
+                <hr style="border:none;border-top:1px solid #eee;margin-bottom:20px;">
+                <div class="panel-title" style="font-size:14px;color:#666;margin-bottom:14px;">Update Nominee</div>
+                <div class="form-row"><label>Nominee Name:</label><input type="text" id="nomName" placeholder="Full name"></div>
+                <div class="form-row">
+                    <label>Relationship:</label>
+                    <select id="nomRel">
+                        <option>Spouse</option><option>Parent</option><option>Child</option><option>Sibling</option><option>Other</option>
+                    </select>
+                </div>
+                <div class="form-row"><label>Date of Birth:</label><input type="date" id="nomDob"></div>
+                <div class="form-row"><label>Contact No.:</label><input type="text" id="nomContact" placeholder="+91 XXXXX XXXXX"></div>
+                <div class="btn-row">
+                    <button class="btn" onclick="saveNominee()">Update Nominee</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="tab-panel" id="tab-settings">
+            <div class="panel">
+                <div class="panel-title">&#9881; Account Settings</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">SMS Alerts</div>
+                        <div class="setting-desc">Receive SMS for every transaction</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Email Notifications</div>
+                        <div class="setting-desc">Monthly statements and alerts via email</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Two-Factor Authentication</div>
+                        <div class="setting-desc">Extra OTP layer on every login</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">UPI Payments</div>
+                        <div class="setting-desc">Enable UPI for this account</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">International Transactions</div>
+                        <div class="setting-desc">Allow transactions outside India</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Paper Statements</div>
+                        <div class="setting-desc">Receive physical monthly statements</div>
+                    </div>
+                    <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+                </div>
+                <div class="btn-row" style="margin-top:10px;">
+                    <button class="btn" onclick="alert('Settings saved successfully!')">Save Settings</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title" style="color:#e74c3c;">&#9888; Danger Zone</div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Block Account Temporarily</div>
+                        <div class="setting-desc">Block all transactions on this account</div>
+                    </div>
+                    <button class="btn" style="background:#e67e22;" onclick="alert('Account block request submitted. Contact support to unblock.')">Block</button>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Close Account</div>
+                        <div class="setting-desc">Permanently close your bank account</div>
+                    </div>
+                    <button class="btn" style="background:#e74c3c;" onclick="alert('Please visit your nearest branch to close the account.')">Request</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="footer">Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM</div>
+
+<script>
+function switchTab(name, el) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.side-menu-item').forEach(m => m.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
+    el.classList.add('active');
+}
+
+function saveEdit() {
+    const msg = document.getElementById('editMsg');
+    msg.className='msg success'; msg.textContent='Profile updated successfully!'; msg.style.display='block';
+    setTimeout(()=>msg.style.display='none', 3000);
+}
+function resetEdit() {
+    document.getElementById('editName').value='John Doe';
+    document.getElementById('editDob').value='1992-03-15';
+    document.getElementById('editMobile').value='+91 98765 43210';
+    document.getElementById('editEmail').value='john.doe@email.com';
+    document.getElementById('editAddress').value='123, Shivaji Nagar, Indore, Madhya Pradesh — 452001';
+    document.getElementById('editPan').value='ABCDE1234F';
+}
+
+function togglePw(id) {
+    const el = document.getElementById(id);
+    el.type = el.type==='password' ? 'text' : 'password';
+}
+function strengthCheck(val) {
+    let s=0;
+    if(val.length>=8)s++; if(/[A-Z]/.test(val))s++; if(/[0-9]/.test(val))s++; if(/[^A-Za-z0-9]/.test(val))s++;
+    const colors=['','#e74c3c','#e67e22','#f1c40f','#27ae60'];
+    const labels=['','Weak','Fair','Good','Strong'];
+    document.getElementById('sbar').style.cssText=`width:${s*25}%;background:${colors[s]||'#ddd'};height:4px;border-radius:2px;margin-top:5px;transition:width .3s,background .3s;`;
+    document.getElementById('shint').textContent=val.length?labels[s]:'';
+}
+function savePass() {
+    const cur=document.getElementById('curPass').value;
+    const np=document.getElementById('newPass').value;
+    const cp=document.getElementById('confPass').value;
+    const msg=document.getElementById('passMsg');
+    if(!cur||!np||!cp){msg.className='msg error';msg.textContent='Please fill all fields.';msg.style.display='block';return;}
+    if(np.length<8){msg.className='msg error';msg.textContent='New password must be at least 8 characters.';msg.style.display='block';return;}
+    if(np!==cp){msg.className='msg error';msg.textContent='New passwords do not match.';msg.style.display='block';return;}
+    msg.className='msg success';msg.textContent='Password changed successfully!';msg.style.display='block';
+    clearPass();
+}
+function clearPass() {
+    ['curPass','newPass','confPass'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('sbar').style.width='0%';
+    document.getElementById('shint').textContent='';
+}
+
+function saveNominee() {
+    const msg=document.getElementById('nomineeMsg');
+    msg.className='msg success';msg.textContent='Nominee details updated successfully!';msg.style.display='block';
+    setTimeout(()=>msg.style.display='none',3000);
+}
+
+function logout() { if(confirm('Logout?')) window.location.href='DAGLOGIN.html'; }
+</script>
+</body>
+</html>

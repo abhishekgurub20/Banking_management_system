@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kingsley Private Bank | My Accounts</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #F5F5F7; min-height: 100vh; }
+
+.header { background: white; display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.logo { display: flex; align-items: center; }
+.logo img { width: 70px; height: 70px; margin-right: 15px; border-radius: 50%; object-fit: cover; }
+.logo h1 { margin: 0; color: #FF3E6C; font-size: 22px; }
+.logo span { color: #666; font-size: 14px; }
+.nav a { margin: 0 12px; text-decoration: none; color: #FF3E6C; font-weight: bold; font-size: 14px; }
+.nav a:hover, .nav a.active { text-decoration: underline; }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #444; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #FF3E6C; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn { padding: 7px 16px; border: none; background: #FF3E6C; color: white; cursor: pointer; border-radius: 4px; font-size: 14px; }
+.btn:hover { background: #e6335c; }
+.btn-outline { background: white; color: #FF3E6C; border: 1.5px solid #FF3E6C; }
+.btn-outline:hover { background: #fff0f3; }
+.btn-sm { padding: 5px 12px; font-size: 13px; }
+.btn-gray { background: #aaa; }
+.btn-gray:hover { background: #888; }
+
+.page-title-bar { background: white; padding: 18px 40px; border-bottom: 1px solid #eee; }
+.page-title-bar h2 { color: #FF3E6C; font-size: 20px; }
+.page-title-bar p  { color: #888; font-size: 13px; margin-top: 4px; }
+
+.main { padding: 30px 40px 80px; }
+.section-heading { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 16px; border-left: 4px solid #FF3E6C; padding-left: 10px; }
+
+/* ACCOUNT CARDS */
+.acct-cards { display: flex; gap: 20px; margin-bottom: 30px; }
+.acct-card { flex: 1; background: linear-gradient(135deg, #FF3E6C, #c2185b); color: white; border-radius: 12px; padding: 24px; position: relative; overflow: hidden; }
+.acct-card.current { background: linear-gradient(135deg, #2980b9, #1a5276); }
+.acct-card-label { font-size: 12px; opacity: 0.85; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.acct-card-number { font-size: 14px; letter-spacing: 2px; margin-bottom: 18px; opacity: 0.9; }
+.acct-card-balance { font-size: 28px; font-weight: bold; margin-bottom: 4px; }
+.acct-card-type { font-size: 12px; opacity: 0.8; }
+.acct-card-circle { position: absolute; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.07); right: -30px; top: -30px; }
+.acct-card-circle2 { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.05); right: 30px; bottom: -20px; }
+.acct-card-actions { margin-top: 16px; display: flex; gap: 8px; }
+.acct-btn { padding: 5px 14px; border: 1.5px solid rgba(255,255,255,0.7); background: transparent; color: white; border-radius: 4px; font-size: 12px; cursor: pointer; }
+.acct-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* FUND TRANSFER */
+.panel { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+.panel-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 18px; }
+.two-col { display: flex; gap: 24px; }
+.two-col .panel { flex: 1; }
+.form-row { display: flex; align-items: center; margin-bottom: 14px; }
+.form-row label { width: 160px; font-size: 14px; color: #444; flex-shrink: 0; }
+.form-row input, .form-row select { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; }
+.form-row input:focus, .form-row select:focus { border-color: #FF3E6C; }
+.btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+
+/* TRANSACTION TABLE */
+.filter-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.filter-bar select, .filter-bar input { padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+.filter-bar input { flex: 1; min-width: 160px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #f9f9f9; color: #555; font-weight: bold; padding: 10px 12px; text-align: left; border-bottom: 2px solid #eee; }
+td { padding: 10px 12px; border-bottom: 1px solid #f2f2f2; color: #444; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fff8f9; }
+.credit { color: #27ae60; font-weight: bold; }
+.debit  { color: #e74c3c; font-weight: bold; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+.badge-success { background: #e8f8f0; color: #1e7e44; }
+.badge-pending { background: #fef9e7; color: #d68910; }
+.badge-failed  { background: #fde8e8; color: #c0392b; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 8px; padding: 30px; width: 420px; }
+.modal h3 { color: #FF3E6C; margin-bottom: 18px; }
+.modal .form-row { margin-bottom: 12px; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+.msg { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 14px; display: none; }
+.msg.success { background: #e8f8f0; color: #1e7e44; border: 1px solid #b2dfc6; }
+.msg.error { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
+
+.footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div><h1>Kingsley Private</h1><span>Bank</span></div>
+    </div>
+    <div class="nav">
+        <a href="USER_HOME.html">DASHBOARD</a>
+        <a href="USER_ACCOUNTS.html" class="active">ACCOUNTS</a>
+        <a href="USER_LOANS.html">LOANS</a>
+        <a href="USER_PROFILE.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-badge"><div class="avatar">JD</div><span>John Doe</span></div>
+        <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="page-title-bar">
+    <h2>My Accounts</h2>
+    <p>Manage your bank accounts, view statements and transfer funds</p>
+</div>
+
+<div class="main">
+
+    <!-- ACCOUNT CARDS -->
+    <div class="section-heading">My Bank Accounts</div>
+    <div class="acct-cards">
+        <div class="acct-card">
+            <div class="acct-card-circle"></div>
+            <div class="acct-card-circle2"></div>
+            <div class="acct-card-label">Savings Account</div>
+            <div class="acct-card-number">KPBL &nbsp; **** &nbsp; **** &nbsp; 4821</div>
+            <div class="acct-card-balance">&#8377; 98,340.00</div>
+            <div class="acct-card-type">IFSC: KPB0001234 &nbsp;|&nbsp; Savings</div>
+            <div class="acct-card-actions">
+                <button class="acct-btn" onclick="openTransfer()">Transfer</button>
+                <button class="acct-btn" onclick="scrollToTxn()">Statement</button>
+            </div>
+        </div>
+        <div class="acct-card current">
+            <div class="acct-card-circle"></div>
+            <div class="acct-card-circle2"></div>
+            <div class="acct-card-label">Current Account</div>
+            <div class="acct-card-number">KPBL &nbsp; **** &nbsp; **** &nbsp; 9103</div>
+            <div class="acct-card-balance">&#8377; 27,000.00</div>
+            <div class="acct-card-type">IFSC: KPB0001234 &nbsp;|&nbsp; Current</div>
+            <div class="acct-card-actions">
+                <button class="acct-btn" onclick="openTransfer()">Transfer</button>
+                <button class="acct-btn" onclick="scrollToTxn()">Statement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FUND TRANSFER + MINI STATEMENT -->
+    <div class="two-col">
+        <div class="panel">
+            <div class="panel-title">&#128257; Fund Transfer</div>
+            <div id="transferMsg" class="msg"></div>
+            <div class="form-row">
+                <label>From Account:</label>
+                <select id="fromAcc">
+                    <option value="savings">Savings — **** 4821</option>
+                    <option value="current">Current — **** 9103</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>To Account No.:</label>
+                <input type="text" id="toAcc" placeholder="Enter account number">
+            </div>
+            <div class="form-row">
+                <label>Beneficiary Name:</label>
+                <input type="text" id="beneName" placeholder="Enter name">
+            </div>
+            <div class="form-row">
+                <label>IFSC Code:</label>
+                <input type="text" id="ifsc" placeholder="e.g. KPB0001234">
+            </div>
+            <div class="form-row">
+                <label>Amount (&#8377;):</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="1">
+            </div>
+            <div class="form-row">
+                <label>Remarks:</label>
+                <input type="text" id="remarks" placeholder="Optional">
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="doTransfer()">Transfer Now</button>
+                <button class="btn btn-gray" onclick="clearTransfer()">Clear</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">&#128202; Account Summary</div>
+            <table>
+                <tr><td style="color:#888;padding:8px 4px;">Account Holder</td><td style="padding:8px 4px;font-weight:bold;">John Doe</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">Account Type</td><td style="padding:8px 4px;">Savings + Current</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">Branch</td><td style="padding:8px 4px;">Kingsley Main Branch</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">IFSC Code</td><td style="padding:8px 4px;">KPB0001234</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">Nominee</td><td style="padding:8px 4px;">Jane Doe</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">Opened On</td><td style="padding:8px 4px;">15 Jan 2022</td></tr>
+                <tr><td style="color:#888;padding:8px 4px;">Total Balance</td><td style="padding:8px 4px;color:#FF3E6C;font-weight:bold;">&#8377; 1,25,340.00</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- TRANSACTION HISTORY -->
+    <div class="panel" id="txnSection">
+        <div class="panel-title">&#128203; Transaction History</div>
+        <div class="filter-bar">
+            <select id="filterType" onchange="filterTxn()">
+                <option value="all">All Transactions</option>
+                <option value="credit">Credits Only</option>
+                <option value="debit">Debits Only</option>
+            </select>
+            <select id="filterMonth" onchange="filterTxn()">
+                <option value="all">All Months</option>
+                <option value="Apr">April 2026</option>
+                <option value="Mar">March 2026</option>
+                <option value="Feb">February 2026</option>
+            </select>
+            <input type="text" id="searchTxn" placeholder="Search description..." oninput="filterTxn()">
+            <button class="btn btn-sm" onclick="printStatement()">&#128424; Print</button>
+        </div>
+        <table id="txnTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Txn ID</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="txnBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- TRANSFER MODAL -->
+<div class="modal-overlay" id="transferModal">
+    <div class="modal">
+        <h3>Confirm Transfer</h3>
+        <p id="confirmText" style="font-size:14px;color:#444;margin-bottom:14px;"></p>
+        <div class="modal-btns">
+            <button class="btn btn-gray" onclick="closeModal()">Cancel</button>
+            <button class="btn" onclick="confirmTransfer()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer">Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM</div>
+
+<script>
+const transactions = [
+    { date:'12 Apr 2026', id:'TXN2640412001', desc:'Salary Credit — April 2026',    type:'credit', amt:45000,  bal:98340,  status:'success', month:'Apr' },
+    { date:'10 Apr 2026', id:'TXN2640410002', desc:'Electricity Bill Payment',       type:'debit',  amt:1850,   bal:53340,  status:'success', month:'Apr' },
+    { date:'08 Apr 2026', id:'TXN2640408003', desc:'Online Shopping — Amazon',       type:'debit',  amt:3499,   bal:55190,  status:'success', month:'Apr' },
+    { date:'05 Apr 2026', id:'TXN2640405004', desc:'EMI — Home Loan',                type:'debit',  amt:12500,  bal:58689,  status:'success', month:'Apr' },
+    { date:'03 Apr 2026', id:'TXN2640403005', desc:'Fund Transfer — Akshat Kumar',   type:'debit',  amt:5000,   bal:71189,  status:'pending', month:'Apr' },
+    { date:'28 Mar 2026', id:'TXN2640328006', desc:'UPI — Grocery Store',            type:'debit',  amt:2200,   bal:76189,  status:'success', month:'Mar' },
+    { date:'25 Mar 2026', id:'TXN2640325007', desc:'Interest Credit — Q1',           type:'credit', amt:1500,   bal:78389,  status:'success', month:'Mar' },
+    { date:'20 Mar 2026', id:'TXN2640320008', desc:'Insurance Premium',               type:'debit',  amt:8000,   bal:76889,  status:'success', month:'Mar' },
+    { date:'15 Mar 2026', id:'TXN2640315009', desc:'Salary Credit — March 2026',     type:'credit', amt:45000,  bal:84889,  status:'success', month:'Mar' },
+    { date:'10 Mar 2026', id:'TXN2640310010', desc:'Mobile Recharge',                type:'debit',  amt:299,    bal:39889,  status:'failed',  month:'Mar' },
+];
+
+function fmt(n) { return '&#8377; ' + n.toLocaleString('en-IN', {minimumFractionDigits:2}); }
+
+function renderTxn(data) {
+    const tbody = document.getElementById('txnBody');
+    tbody.innerHTML = '';
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#aaa;padding:20px;">No transactions found.</td></tr>';
+        return;
+    }
+    data.forEach(t => {
+        const badge = t.status === 'success' ? 'badge-success' : t.status === 'pending' ? 'badge-pending' : 'badge-failed';
+        const statusLabel = t.status.charAt(0).toUpperCase() + t.status.slice(1);
+        tbody.innerHTML += `<tr>
+            <td>${t.date}</td>
+            <td style="font-size:12px;color:#aaa;">${t.id}</td>
+            <td>${t.desc}</td>
+            <td class="${t.type}">${t.type.charAt(0).toUpperCase()+t.type.slice(1)}</td>
+            <td class="${t.type}">${t.type==='credit'?'+ ':'-  '}${fmt(t.amt)}</td>
+            <td>${fmt(t.bal)}</td>
+            <td><span class="badge ${badge}">${statusLabel}</span></td>
+        </tr>`;
+    });
+}
+
+function filterTxn() {
+    const type  = document.getElementById('filterType').value;
+    const month = document.getElementById('filterMonth').value;
+    const search= document.getElementById('searchTxn').value.toLowerCase();
+    let data = transactions.filter(t => {
+        return (type  === 'all' || t.type  === type) &&
+               (month === 'all' || t.month === month) &&
+               (t.desc.toLowerCase().includes(search));
+    });
+    renderTxn(data);
+}
+
+renderTxn(transactions);
+
+function scrollToTxn() { document.getElementById('txnSection').scrollIntoView({behavior:'smooth'}); }
+
+function doTransfer() {
+    const to = document.getElementById('toAcc').value.trim();
+    const name = document.getElementById('beneName').value.trim();
+    const amt = document.getElementById('amount').value;
+    const ifsc = document.getElementById('ifsc').value.trim();
+    const msg = document.getElementById('transferMsg');
+    if (!to || !name || !amt || !ifsc) { msg.className='msg error'; msg.textContent='Please fill in all required fields.'; msg.style.display='block'; return; }
+    if (isNaN(amt) || Number(amt) <= 0) { msg.className='msg error'; msg.textContent='Please enter a valid amount.'; msg.style.display='block'; return; }
+    msg.style.display='none';
+    document.getElementById('confirmText').innerHTML =
+        `Transfer <strong>&#8377;${Number(amt).toLocaleString('en-IN')}</strong> to <strong>${name}</strong> (Account: ${to})?`;
+    document.getElementById('transferModal').classList.add('show');
+}
+
+function confirmTransfer() {
+    closeModal();
+    const msg = document.getElementById('transferMsg');
+    msg.className='msg success';
+    msg.textContent = 'Transfer initiated successfully! It will reflect in 1-2 business hours.';
+    msg.style.display='block';
+    clearTransfer();
+}
+
+function clearTransfer() {
+    ['toAcc','beneName','amount','ifsc','remarks'].forEach(id => document.getElementById(id).value='');
+}
+
+function closeModal() { document.getElementById('transferModal').classList.remove('show'); }
+function openTransfer() { scrollToTxn(); }
+function printStatement() { window.print(); }
+function logout() { if(confirm('Logout?')) window.location.href='DAGLOGIN.html'; }
+</script>
+</body>
+</html>

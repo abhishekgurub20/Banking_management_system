@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kingsley Private Bank | Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #F5F5F7; min-height: 100vh; }
+
+/* ── HEADER ── */
+.header {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.logo { display: flex; align-items: center; }
+.logo img { width: 70px; height: 70px; margin-right: 15px; border-radius: 50%; object-fit: cover; }
+.logo h1 { margin: 0; color: #FF3E6C; font-size: 22px; }
+.logo span { color: #666; font-size: 14px; }
+.nav a { margin: 0 12px; text-decoration: none; color: #FF3E6C; font-weight: bold; font-size: 14px; }
+.nav a:hover, .nav a.active { text-decoration: underline; }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #444; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #FF3E6C; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn { padding: 7px 16px; border: none; background: #FF3E6C; color: white; cursor: pointer; border-radius: 4px; font-size: 14px; }
+.btn:hover { background: #e6335c; }
+.btn-outline { background: white; color: #FF3E6C; border: 1.5px solid #FF3E6C; }
+.btn-outline:hover { background: #fff0f3; }
+
+/* ── WELCOME BANNER ── */
+.welcome-banner {
+    background: linear-gradient(135deg, #FF3E6C 0%, #c2185b 100%);
+    color: white;
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.welcome-banner h2 { font-size: 24px; margin-bottom: 6px; }
+.welcome-banner p { font-size: 14px; opacity: 0.9; }
+.banner-right { text-align: right; font-size: 13px; opacity: 0.85; }
+.banner-right .date { font-size: 15px; font-weight: bold; margin-top: 4px; }
+
+/* ── MAIN LAYOUT ── */
+.main { padding: 30px 40px 80px; }
+
+/* ── STAT CARDS ── */
+.stats-row { display: flex; gap: 20px; margin-bottom: 30px; }
+.stat-card {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-top: 4px solid #FF3E6C;
+}
+.stat-card.green { border-color: #27ae60; }
+.stat-card.blue  { border-color: #2980b9; }
+.stat-card.orange{ border-color: #e67e22; }
+.stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: bold; color: #222; }
+.stat-value.green  { color: #27ae60; }
+.stat-value.blue   { color: #2980b9; }
+.stat-value.orange { color: #e67e22; }
+.stat-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+/* ── SECTION HEADING ── */
+.section-heading { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 16px; border-left: 4px solid #FF3E6C; padding-left: 10px; }
+
+/* ── QUICK ACCESS CARDS ── */
+.cards-row { display: flex; gap: 20px; margin-bottom: 30px; }
+.access-card {
+    flex: 1;
+    background: white;
+    border-radius: 8px;
+    padding: 28px 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.access-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,0.10); }
+.card-icon { font-size: 40px; margin-bottom: 14px; }
+.card-name { font-size: 16px; font-weight: bold; color: #222; margin-bottom: 6px; }
+.card-desc { font-size: 13px; color: #888; }
+.card-arrow { margin-top: 14px; color: #FF3E6C; font-size: 20px; }
+
+/* ── RECENT TRANSACTIONS ── */
+.panel { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.panel-title { font-size: 16px; font-weight: bold; color: #333; }
+.panel-link { font-size: 13px; color: #FF3E6C; text-decoration: none; }
+.panel-link:hover { text-decoration: underline; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #f9f9f9; color: #555; font-weight: bold; padding: 10px 12px; text-align: left; border-bottom: 2px solid #eee; }
+td { padding: 10px 12px; border-bottom: 1px solid #f2f2f2; color: #444; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fff8f9; }
+.credit { color: #27ae60; font-weight: bold; }
+.debit  { color: #e74c3c; font-weight: bold; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+.badge-success { background: #e8f8f0; color: #1e7e44; }
+.badge-pending { background: #fef9e7; color: #d68910; }
+.badge-failed  { background: #fde8e8; color: #c0392b; }
+
+/* ── FOOTER ── */
+.footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Kingsley Private Bank Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="USER_HOME.html" class="active">DASHBOARD</a>
+        <a href="USER_ACCOUNTS.html">ACCOUNTS</a>
+        <a href="USER_LOANS.html">LOANS</a>
+        <a href="USER_PROFILE.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-badge">
+            <div class="avatar" id="avatarInitials">JD</div>
+            <span id="displayName">John Doe</span>
+        </div>
+        <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- WELCOME BANNER -->
+<div class="welcome-banner">
+    <div>
+        <h2 id="welcomeMsg">Good Morning, John!</h2>
+        <p>Welcome back to your Kingsley Private Bank dashboard.</p>
+    </div>
+    <div class="banner-right">
+        <div>Today's Date</div>
+        <div class="date" id="todayDate">--</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-label">Total Balance</div>
+            <div class="stat-value">&#8377; 1,25,340.00</div>
+            <div class="stat-sub">Savings + Current</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Credits This Month</div>
+            <div class="stat-value green">&#8377; 45,000.00</div>
+            <div class="stat-sub">3 transactions</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-label">Active Loans</div>
+            <div class="stat-value blue">2</div>
+            <div class="stat-sub">Next EMI: 5th May 2026</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-label">Debits This Month</div>
+            <div class="stat-value orange">&#8377; 18,250.00</div>
+            <div class="stat-sub">7 transactions</div>
+        </div>
+    </div>
+
+    <!-- QUICK ACCESS -->
+    <div class="section-heading">Quick Access</div>
+    <div class="cards-row">
+        <a class="access-card" href="USER_ACCOUNTS.html">
+            <div class="card-icon">🏦</div>
+            <div class="card-name">My Accounts</div>
+            <div class="card-desc">View balances, statements &amp; transfer funds</div>
+            <div class="card-arrow">→</div>
+        </a>
+        <a class="access-card" href="USER_LOANS.html">
+            <div class="card-icon">💳</div>
+            <div class="card-name">My Loans</div>
+            <div class="card-desc">Check EMIs, apply for new loans &amp; repay</div>
+            <div class="card-arrow">→</div>
+        </a>
+        <a class="access-card" href="USER_PROFILE.html">
+            <div class="card-icon">👤</div>
+            <div class="card-name">My Profile</div>
+            <div class="card-desc">Update personal info &amp; change password</div>
+            <div class="card-arrow">→</div>
+        </a>
+    </div>
+
+    <!-- RECENT TRANSACTIONS -->
+    <div class="panel">
+        <div class="panel-head">
+            <div class="panel-title">Recent Transactions</div>
+            <a class="panel-link" href="USER_ACCOUNTS.html">View All →</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>12 Apr 2026</td>
+                    <td>Salary Credit — April 2026</td>
+                    <td class="credit">Credit</td>
+                    <td class="credit">+ &#8377;45,000.00</td>
+                    <td><span class="badge badge-success">Success</span></td>
+                </tr>
+                <tr>
+                    <td>10 Apr 2026</td>
+                    <td>Electricity Bill Payment</td>
+                    <td class="debit">Debit</td>
+                    <td class="debit">- &#8377;1,850.00</td>
+                    <td><span class="badge badge-success">Success</span></td>
+                </tr>
+                <tr>
+                    <td>08 Apr 2026</td>
+                    <td>Online Shopping — Amazon</td>
+                    <td class="debit">Debit</td>
+                    <td class="debit">- &#8377;3,499.00</td>
+                    <td><span class="badge badge-success">Success</span></td>
+                </tr>
+                <tr>
+                    <td>05 Apr 2026</td>
+                    <td>EMI — Home Loan</td>
+                    <td class="debit">Debit</td>
+                    <td class="debit">- &#8377;12,500.00</td>
+                    <td><span class="badge badge-success">Success</span></td>
+                </tr>
+                <tr>
+                    <td>03 Apr 2026</td>
+                    <td>Fund Transfer — Akshat Kumar</td>
+                    <td class="debit">Debit</td>
+                    <td class="debit">- &#8377;5,000.00</td>
+                    <td><span class="badge badge-pending">Pending</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM
+</div>
+
+<script>
+    // Set greeting
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+    document.getElementById('welcomeMsg').textContent = greet + ', John!';
+
+    // Set today's date
+    const today = new Date();
+    document.getElementById('todayDate').textContent = today.toDateString();
+
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            window.location.href = 'DAGLOGIN.html';
+        }
+    }
+</script>
+</body>
+</html>

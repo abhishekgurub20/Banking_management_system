@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fund Transfer | Kingsley Private Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f4f4f4; }
+        .header { background: white; padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ccc; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; }
+        .logo img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+        .logo h1 { margin: 0; color: #e91e63; font-size: 20px; }
+        .logo span { color: #555; font-size: 12px; }
+        .nav a { margin: 0 12px; text-decoration: none; color: #e91e63; font-weight: bold; font-size: 14px; }
+        .nav a:hover { text-decoration: underline; }
+        .nav a.active { border-bottom: 2px solid #e91e63; padding-bottom: 2px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .user-chip { display: flex; align-items: center; gap: 8px; background: #fce4ec; color: #e91e63; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .user-chip .avatar { width: 28px; height: 28px; background: #e91e63; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .btn-logout { padding: 7px 16px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+
+        .main { padding: 30px 40px 80px; max-width: 900px; margin: 0 auto; }
+        .page-title { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 24px; border-left: 4px solid #e91e63; padding-left: 12px; }
+
+        .transfer-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 32px; margin-bottom: 24px; }
+        .transfer-card h3 { font-size: 18px; font-weight: 700; color: #e91e63; margin-bottom: 20px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #e91e63; box-shadow: 0 0 0 3px rgba(233,30,99,0.08); }
+        .form-group textarea { resize: vertical; min-height: 60px; }
+        .form-group .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .account-cards { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+        .acc-card { flex: 1; min-width: 200px; padding: 16px; border-radius: 10px; cursor: pointer; border: 2px solid #eee; transition: all 0.2s; }
+        .acc-card:hover { border-color: #e91e63; }
+        .acc-card.selected { border-color: #e91e63; background: #fce4ec; }
+        .acc-card .acc-type { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .acc-card .acc-num { font-size: 13px; color: #555; font-family: monospace; margin: 4px 0; }
+        .acc-card .acc-bal { font-size: 20px; font-weight: 700; color: #333; }
+
+        .btn-transfer { width: 100%; padding: 14px; background: linear-gradient(135deg, #e91e63, #c2185b); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        .btn-transfer:hover { opacity: 0.9; }
+        .btn-transfer:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .msg-box { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+        .msg-box.success { background: #e8f5e9; color: #2e7d32; display: block; border: 1px solid #c8e6c9; }
+        .msg-box.error   { background: #ffebee; color: #c62828; display: block; border: 1px solid #ffcdd2; }
+
+        .success-receipt { background: #f1f8e9; border: 2px solid #4caf50; border-radius: 12px; padding: 28px; text-align: center; display: none; }
+        .success-receipt.show { display: block; }
+        .success-receipt .check { font-size: 48px; margin-bottom: 12px; }
+        .success-receipt h3 { font-size: 20px; color: #2e7d32; margin-bottom: 8px; }
+        .success-receipt .ref { font-family: monospace; font-size: 14px; color: #555; background: white; padding: 6px 14px; border-radius: 6px; display: inline-block; margin: 8px 0; }
+        .success-receipt .details { font-size: 14px; color: #555; margin: 6px 0; }
+        .success-receipt .btn-new { margin-top: 16px; padding: 10px 24px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+        .footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div><h1>Kingsley Private</h1><span>Bank</span></div>
+    </div>
+    <div class="nav">
+        <a href="dashboard.html">DASHBOARD</a>
+        <a href="transfer.html" class="active">TRANSFER</a>
+        <a href="transactions.html">TRANSACTIONS</a>
+        <a href="loans.html">LOANS</a>
+        <a href="profile.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-chip"><div class="avatar" id="userAvatar">U</div> <span id="userName">User</span></div>
+        <button class="btn-logout" onclick="logoutFunc()">Logout</button>
+    </div>
+</div>
+
+<div class="main">
+    <div class="page-title">💸 Fund Transfer</div>
+
+    <!-- Transfer Form -->
+    <div class="transfer-card" id="transferForm">
+        <h3>Transfer Money</h3>
+        <div class="msg-box" id="formMsg"></div>
+
+        <div class="form-group">
+            <label>Select Source Account</label>
+        </div>
+        <div class="account-cards" id="accountCards">
+            <div style="color:#aaa;font-size:14px;">Loading accounts...</div>
+        </div>
+        <input type="hidden" id="fromAccountId">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Beneficiary Account Number *</label>
+                <input type="text" id="toAccountNumber" placeholder="Enter account number">
+            </div>
+            <div class="form-group">
+                <label>Transfer Type</label>
+                <select id="transferType">
+                    <option value="NEFT">NEFT (Normal)</option>
+                    <option value="RTGS">RTGS (High Value)</option>
+                    <option value="IMPS">IMPS (Instant)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Amount (₹) *</label>
+            <input type="number" id="amount" placeholder="Enter amount" min="1" step="0.01">
+            <div class="hint">Available balance will be shown above. You cannot transfer more than your balance.</div>
+        </div>
+
+        <div class="form-group">
+            <label>Remarks (optional)</label>
+            <textarea id="remarks" placeholder="e.g., Rent payment, Gift, etc."></textarea>
+        </div>
+
+        <button class="btn-transfer" id="submitBtn" onclick="doTransfer()">💸 Transfer Now</button>
+    </div>
+
+    <!-- Success Receipt -->
+    <div class="success-receipt" id="successReceipt">
+        <div class="check">✅</div>
+        <h3>Transfer Successful!</h3>
+        <div class="ref" id="refNumber"></div>
+        <div class="details" id="receiptDetails"></div>
+        <button class="btn-new" onclick="resetForm()">Make Another Transfer</button>
+    </div>
+</div>
+
+<div class="footer">Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'DAGLOGIN.html';
+
+    const uName = localStorage.getItem('userName') || 'User';
+    document.getElementById('userName').textContent = uName;
+    document.getElementById('userAvatar').textContent = uName.substring(0, 2).toUpperCase();
+
+    let accounts = [];
+    let selectedAccountId = null;
+
+    async function loadAccounts() {
+        try {
+            const res = await fetch('http://localhost:5000/api/accounts', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                accounts = data.accounts;
+                const container = document.getElementById('accountCards');
+                container.innerHTML = accounts.map(a => `
+                    <div class="acc-card" id="acc-${a.id}" onclick="selectAccount(${a.id})">
+                        <div class="acc-type">${a.account_type} Account</div>
+                        <div class="acc-num">${a.account_number}</div>
+                        <div class="acc-bal">₹${Number(a.balance).toLocaleString('en-IN')}</div>
+                    </div>`).join('');
+                if (accounts.length === 1) selectAccount(accounts[0].id);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function selectAccount(id) {
+        selectedAccountId = id;
+        document.getElementById('fromAccountId').value = id;
+        document.querySelectorAll('.acc-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('acc-' + id).classList.add('selected');
+    }
+
+    async function doTransfer() {
+        const toAccountNumber = document.getElementById('toAccountNumber').value.trim();
+        const amount          = document.getElementById('amount').value;
+        const remarks         = document.getElementById('remarks').value.trim();
+        const transferType    = document.getElementById('transferType').value;
+        const msg             = document.getElementById('formMsg');
+
+        if (!selectedAccountId) { msg.textContent = 'Please select a source account.'; msg.className = 'msg-box error'; return; }
+        if (!toAccountNumber) { msg.textContent = 'Please enter beneficiary account number.'; msg.className = 'msg-box error'; return; }
+        if (!amount || Number(amount) <= 0) { msg.textContent = 'Please enter a valid amount.'; msg.className = 'msg-box error'; return; }
+
+        const selectedAcc = accounts.find(a => a.id === selectedAccountId);
+        if (selectedAcc && Number(amount) > Number(selectedAcc.balance)) {
+            msg.textContent = `Insufficient balance! Available: ₹${Number(selectedAcc.balance).toLocaleString('en-IN')}`;
+            msg.className = 'msg-box error';
+            return;
+        }
+
+        if (!confirm(`Transfer ₹${Number(amount).toLocaleString('en-IN')} to account ${toAccountNumber}?`)) return;
+
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').textContent = 'Processing...';
+        try {
+            const res = await fetch('http://localhost:5000/api/transactions/transfer', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fromAccountId: selectedAccountId,
+                    toAccountNumber,
+                    amount: Number(amount),
+                    remarks,
+                    transferType
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('transferForm').style.display = 'none';
+                document.getElementById('successReceipt').classList.add('show');
+                document.getElementById('refNumber').textContent = `Ref: ${data.referenceNumber}`;
+                document.getElementById('receiptDetails').innerHTML = `
+                    <p>Amount: <strong>₹${Number(amount).toLocaleString('en-IN')}</strong></p>
+                    <p>To: <strong>${toAccountNumber}</strong></p>
+                    <p>Type: <strong>${transferType}</strong></p>
+                    <p>New Balance: <strong>₹${Number(data.newBalance).toLocaleString('en-IN')}</strong></p>
+                `;
+            } else {
+                msg.textContent = data.message || 'Transfer failed';
+                msg.className = 'msg-box error';
+            }
+        } catch(e) {
+            msg.textContent = 'Server error. Please try again.';
+            msg.className = 'msg-box error';
+        }
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = '💸 Transfer Now';
+    }
+
+    function resetForm() {
+        document.getElementById('transferForm').style.display = 'block';
+        document.getElementById('successReceipt').classList.remove('show');
+        document.getElementById('toAccountNumber').value = '';
+        document.getElementById('amount').value = '';
+        document.getElementById('remarks').value = '';
+        document.getElementById('formMsg').className = 'msg-box';
+        selectedAccountId = null;
+        document.querySelectorAll('.acc-card').forEach(c => c.classList.remove('selected'));
+        loadAccounts(); // refresh balances
+    }
+
+    function logoutFunc() {
+        if(confirm('Logout from your account?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = 'DAGLOGIN.html';
+        }
+    }
+
+    loadAccounts();
+</script>
+</body>
+</html>

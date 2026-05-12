@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | Loans</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        /* ── HEADER ── */
+        .header { background: white; padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ccc; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; }
+        .logo img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+        .logo h1 { margin: 0; color: #e91e63; font-size: 22px; }
+        .logo span { color: #555; font-size: 14px; }
+        .nav a { margin: 0 12px; text-decoration: none; color: #e91e63; font-weight: bold; font-size: 14px; }
+        .nav a:hover { text-decoration: underline; }
+        .nav a.active { border-bottom: 2px solid #e91e63; padding-bottom: 2px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .user-chip { display: flex; align-items: center; gap: 8px; background: #fce4ec; color: #e91e63; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .user-chip .avatar { width: 28px; height: 28px; background: #e91e63; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .btn-logout { padding: 7px 16px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn-logout:hover { background: #c2185b; }
+
+        /* ── PAGE HEADER ── */
+        .page-header { background: linear-gradient(135deg, #e91e63, #c2185b); color: white; padding: 28px 40px; }
+        .page-header h2 { font-size: 24px; margin-bottom: 4px; }
+        .page-header p { font-size: 13px; opacity: 0.88; }
+
+        /* ── MAIN ── */
+        .main { padding: 28px 40px 80px; }
+        .section-title { font-size: 17px; color: #333; font-weight: bold; margin-bottom: 16px; border-left: 4px solid #e91e63; padding-left: 10px; }
+        .panel { background: white; border-radius: 8px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+
+        /* ── ACTIVE LOANS GRID ── */
+        .loans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 28px; }
+        .loan-card { background: white; border-radius: 8px; padding: 22px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 5px solid #e91e63; }
+        .loan-card.blue { border-left-color: #2196f3; }
+        .loan-card.green { border-left-color: #4caf50; }
+        .loan-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+        .loan-card-title { font-size: 16px; font-weight: bold; color: #333; }
+        .loan-card-id { font-size: 12px; color: #aaa; margin-top: 3px; }
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .status-active { background: #e8f5e9; color: #388e3c; }
+        .status-closed { background: #f5f5f5; color: #888; }
+        .loan-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-bottom: 14px; }
+        .loan-meta-item .lm-label { font-size: 11px; color: #aaa; margin-bottom: 2px; }
+        .loan-meta-item .lm-val { font-size: 14px; color: #333; font-weight: bold; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
+        .bar-bg { background: #f0f0f0; border-radius: 4px; height: 8px; }
+        .bar-fill { height: 8px; border-radius: 4px; background: #e91e63; transition: width 0.4s; }
+        .bar-fill.blue { background: #2196f3; }
+        .bar-fill.green { background: #4caf50; }
+
+        /* ── LOAN TYPES OFFERED ── */
+        .offerings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+        .offer-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; transition: transform 0.15s; }
+        .offer-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(233,30,99,0.12); }
+        .offer-icon { font-size: 32px; margin-bottom: 10px; }
+        .offer-title { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 6px; }
+        .offer-rate { font-size: 20px; font-weight: bold; color: #e91e63; margin-bottom: 4px; }
+        .offer-desc { font-size: 12px; color: #888; margin-bottom: 14px; }
+        .btn-apply { padding: 8px 22px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn-apply:hover { background: #c2185b; }
+
+        /* ── APPLICATION FORM ── */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label { font-size: 13px; color: #555; font-weight: bold; }
+        .form-field input, .form-field select { padding: 9px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; font-family: Arial, sans-serif; outline: none; }
+        .form-field input:focus, .form-field select:focus { border-color: #e91e63; }
+        .btn-pink { padding: 10px 28px; background: #e91e63; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; margin-top: 8px; }
+        .btn-pink:hover { background: #c2185b; }
+        .btn-gray { padding: 10px 22px; background: #aaa; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; margin-top: 8px; margin-left: 8px; }
+        .btn-gray:hover { background: #888; }
+        .msg { display: none; padding: 12px 16px; border-radius: 4px; margin-top: 14px; font-size: 13px; }
+        .msg.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #b2dfdb; display: block; }
+        .msg.error   { background: #fce4ec; color: #c62828; border: 1px solid #f5c6c6; display: block; }
+
+        /* EMI CALCULATOR */
+        .emi-row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 16px; }
+        .emi-field { display: flex; flex-direction: column; gap: 5px; }
+        .emi-field label { font-size: 12px; color: #666; font-weight: bold; }
+        .emi-field input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; width: 150px; outline: none; }
+        .emi-field input:focus { border-color: #e91e63; }
+        .emi-result { background: #fce4ec; border-radius: 6px; padding: 14px 20px; font-size: 14px; color: #333; }
+        .emi-amount { font-size: 24px; font-weight: bold; color: #e91e63; }
+
+        /* ── FOOTER ── */
+        .footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #555; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="dashboard.html">DASHBOARD</a>
+        <a href="transfer.html">TRANSFER</a>
+        <a href="transactions.html">TRANSACTIONS</a>
+        <a href="loans.html" class="active">LOANS</a>
+        <a href="profile.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-chip">
+            <div class="avatar">RJ</div>
+            Rahul Joshi
+        </div>
+        <button class="btn-logout" onclick="if(confirm('Logout from your account?')) window.location.href='DAGLOGIN.html'">Logout</button>
+    </div>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h2>🏦 Loan Management</h2>
+    <p>View your active loans, track repayments, calculate EMI, and apply for new loans.</p>
+</div>
+
+<div class="main">
+
+    <!-- ACTIVE LOANS -->
+    <div class="section-title">Active Loans</div>
+    <div class="loans-grid" id="loans-container">
+        <div style="padding:20px; color:#888;">Loading active loans...</div>
+    </div>
+
+    <!-- EMI CALCULATOR -->
+    <div class="section-title">EMI Calculator</div>
+    <div class="panel">
+        <div class="emi-row">
+            <div class="emi-field"><label>Loan Amount (₹)</label><input type="number" id="emi-principal" placeholder="e.g. 500000" oninput="calcEMI()"></div>
+            <div class="emi-field"><label>Interest Rate (% p.a.)</label><input type="number" id="emi-rate" placeholder="e.g. 8.5" step="0.1" oninput="calcEMI()"></div>
+            <div class="emi-field"><label>Tenure (Months)</label><input type="number" id="emi-tenure" placeholder="e.g. 60" oninput="calcEMI()"></div>
+        </div>
+        <div class="emi-result" id="emi-result" style="display:none">
+            Monthly EMI: <span class="emi-amount" id="emi-out"></span> &nbsp;|&nbsp;
+            Total Interest: <span style="color:#555" id="emi-interest"></span> &nbsp;|&nbsp;
+            Total Payable: <span style="color:#555" id="emi-total"></span>
+        </div>
+    </div>
+
+    <!-- LOAN OFFERINGS -->
+    <div class="section-title">Apply for a New Loan</div>
+    <div class="offerings-grid">
+        <div class="offer-card">
+            <div class="offer-icon">🏠</div>
+            <div class="offer-title">Home Loan</div>
+            <div class="offer-rate">8.5% p.a.</div>
+            <div class="offer-desc">Up to ₹50 Lakhs · Up to 25 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Home Loan','8.5')">Apply Now</button>
+        </div>
+        <div class="offer-card">
+            <div class="offer-icon">🚗</div>
+            <div class="offer-title">Car Loan</div>
+            <div class="offer-rate">9.2% p.a.</div>
+            <div class="offer-desc">Up to ₹15 Lakhs · Up to 7 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Car Loan','9.2')">Apply Now</button>
+        </div>
+        <div class="offer-card">
+            <div class="offer-icon">🎓</div>
+            <div class="offer-title">Education Loan</div>
+            <div class="offer-rate">7.8% p.a.</div>
+            <div class="offer-desc">Up to ₹20 Lakhs · Up to 10 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Education Loan','7.8')">Apply Now</button>
+        </div>
+        <div class="offer-card">
+            <div class="offer-icon">💼</div>
+            <div class="offer-title">Personal Loan</div>
+            <div class="offer-rate">11.5% p.a.</div>
+            <div class="offer-desc">Up to ₹5 Lakhs · Up to 5 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Personal Loan','11.5')">Apply Now</button>
+        </div>
+        <div class="offer-card">
+            <div class="offer-icon">🏢</div>
+            <div class="offer-title">Business Loan</div>
+            <div class="offer-rate">10.5% p.a.</div>
+            <div class="offer-desc">Up to ₹25 Lakhs · Up to 10 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Business Loan','10.5')">Apply Now</button>
+        </div>
+        <div class="offer-card">
+            <div class="offer-icon">🌾</div>
+            <div class="offer-title">Agricultural Loan</div>
+            <div class="offer-rate">6.5% p.a.</div>
+            <div class="offer-desc">Up to ₹10 Lakhs · Up to 7 Years</div>
+            <button class="btn-apply" onclick="prefillLoan('Agricultural Loan','6.5')">Apply Now</button>
+        </div>
+    </div>
+
+    <!-- APPLICATION FORM -->
+    <div class="section-title">Loan Application Form</div>
+    <div class="panel" id="loan-form-panel">
+        <div class="form-grid">
+            <div class="form-field">
+                <label>Loan Type</label>
+                <select id="loan-type">
+                    <option value="">-- Select Loan Type --</option>
+                    <option>Home Loan</option>
+                    <option>Car Loan</option>
+                    <option>Education Loan</option>
+                    <option>Personal Loan</option>
+                    <option>Business Loan</option>
+                    <option>Agricultural Loan</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Requested Amount (₹)</label>
+                <input type="number" id="loan-amount" placeholder="e.g. 1000000" min="10000">
+            </div>
+            <div class="form-field">
+                <label>Interest Rate (% p.a.)</label>
+                <input type="text" id="loan-rate" placeholder="Auto-filled on selection" readonly>
+            </div>
+            <div class="form-field">
+                <label>Tenure (Years)</label>
+                <select id="loan-tenure">
+                    <option>1 Year</option><option>2 Years</option><option>3 Years</option>
+                    <option>5 Years</option><option>7 Years</option><option>10 Years</option>
+                    <option>15 Years</option><option>20 Years</option><option>25 Years</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>Annual Income (₹)</label>
+                <input type="number" id="loan-income" placeholder="e.g. 600000" min="0">
+            </div>
+            <div class="form-field">
+                <label>Purpose / Remarks</label>
+                <input type="text" id="loan-purpose" placeholder="Brief purpose of loan">
+            </div>
+        </div>
+        <div id="loan-msg" class="msg"></div>
+        <button class="btn-pink" onclick="submitLoan()">Submit Application</button>
+        <button class="btn-gray" onclick="clearLoan()">Clear</button>
+    </div>
+
+</div>
+
+<div class="footer">
+    Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'DAGLOGIN.html';
+
+    const userName = localStorage.getItem('userName') || 'User';
+    document.querySelector('.user-chip').innerHTML = `<div class="avatar">${userName.substring(0, 2).toUpperCase()}</div> ${userName}`;
+
+    async function loadLoans() {
+        try {
+            const res = await fetch('http://localhost:5000/api/loans', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            const container = document.getElementById('loans-container');
+            
+            if (data.success) {
+                if (data.loans.length === 0) {
+                    container.innerHTML = '<div style="padding:20px; color:#888;">No active loans found.</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                data.loans.forEach(loan => {
+                    let progress = 0;
+                    if(loan.principal_amount > 0) {
+                        progress = Math.min(100, Math.round((Number(loan.amount_paid) / Number(loan.principal_amount)) * 100));
+                    }
+                    
+                    const html = `
+                    <div class="loan-card">
+                        <div class="loan-card-header">
+                            <div>
+                                <div class="loan-card-title">${loan.loan_type}</div>
+                                <div class="loan-card-id">Loan ID: ${loan.loan_id_str}</div>
+                            </div>
+                            <span class="status-badge ${loan.status === 'active' ? 'status-active' : 'status-closed'}">${loan.status.toUpperCase()}</span>
+                        </div>
+                        <div class="loan-meta">
+                            <div class="loan-meta-item"><div class="lm-label">Principal Amount</div><div class="lm-val">₹${Number(loan.principal_amount).toLocaleString('en-IN')}</div></div>
+                            <div class="loan-meta-item"><div class="lm-label">Interest Rate</div><div class="lm-val">${loan.interest_rate}% p.a.</div></div>
+                            <div class="loan-meta-item"><div class="lm-label">Monthly EMI</div><div class="lm-val">₹${Number(loan.monthly_emi || 0).toLocaleString('en-IN')}</div></div>
+                            <div class="loan-meta-item"><div class="lm-label">Tenure</div><div class="lm-val">${loan.tenure_years} Years</div></div>
+                            <div class="loan-meta-item"><div class="lm-label">Start Date</div><div class="lm-val">${loan.start_date ? new Date(loan.start_date).toLocaleDateString() : 'N/A'}</div></div>
+                        </div>
+                        <div class="progress-label"><span>Paid: ₹${Number(loan.amount_paid || 0).toLocaleString('en-IN')} (${progress}%)</span><span>Remaining: ₹${Number(loan.amount_remaining || 0).toLocaleString('en-IN')}</span></div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:${progress}%"></div></div>
+                    </div>`;
+                    container.innerHTML += html;
+                });
+            }
+        } catch (e) { console.error('Error fetching loans', e); }
+    }
+
+    function calcEMI() {
+        const P = parseFloat(document.getElementById('emi-principal').value);
+        const r = parseFloat(document.getElementById('emi-rate').value) / 12 / 100;
+        const n = parseInt(document.getElementById('emi-tenure').value);
+        const result = document.getElementById('emi-result');
+        if (!P || !r || !n) { result.style.display = 'none'; return; }
+        const emi = (P * r * Math.pow(1+r, n)) / (Math.pow(1+r, n) - 1);
+        const total = emi * n;
+        const interest = total - P;
+        result.style.display = 'block';
+        document.getElementById('emi-out').textContent      = '₹' + emi.toLocaleString('en-IN', {maximumFractionDigits:0});
+        document.getElementById('emi-interest').textContent = '₹' + interest.toLocaleString('en-IN', {maximumFractionDigits:0});
+        document.getElementById('emi-total').textContent    = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits:0});
+    }
+
+    function prefillLoan(type, rate) {
+        document.getElementById('loan-type').value = type;
+        document.getElementById('loan-rate').value = rate;
+        document.getElementById('loan-form-panel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function submitLoan() {
+        const type   = document.getElementById('loan-type').value;
+        const amount = document.getElementById('loan-amount').value;
+        const rate   = document.getElementById('loan-rate').value;
+        const tenure = document.getElementById('loan-tenure').value;
+        const income = document.getElementById('loan-income').value;
+        const purp   = document.getElementById('loan-purpose').value;
+        const msg    = document.getElementById('loan-msg');
+        if (!type || !amount || !income) {
+            msg.className = 'msg error'; msg.textContent = 'Please fill in all required fields.'; return;
+        }
+
+        try {
+            msg.className = 'msg'; msg.style.display = 'block'; msg.textContent = 'Processing application...';
+            const res = await fetch('http://localhost:5000/api/loans/apply', {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({
+                    loanType: type,
+                    loanAmount: Number(amount),
+                    tenureYears: parseInt(tenure),
+                    annualIncome: Number(income),
+                    purpose: purp
+                })
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                msg.className = 'msg success';
+                msg.textContent = `✔ Your ${type} application has been submitted! Application ID: ${result.loanId}. Our team will contact you within 2-3 working days.`;
+                loadLoans();
+            } else {
+                msg.className = 'msg error';
+                msg.textContent = result.message || 'Application failed.';
+            }
+        } catch(e) {
+            msg.className = 'msg error';
+            msg.textContent = 'Connection error.';
+        }
+    }
+
+    function clearLoan() {
+        ['loan-type','loan-amount','loan-rate','loan-income','loan-purpose'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
+        });
+        document.getElementById('loan-msg').style.display = 'none';
+    }
+
+    loadLoans();
+</script>
+</body>
+</html>

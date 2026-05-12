@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 60px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            color: #7d10e3;
+        }
+
+        .logo span {
+            color: #555;
+            font-size: 18px;
+        }
+
+        /* Login Box */
+        .container {
+            width: 400px;
+            background-color: white;
+            margin: 80px auto;
+            padding: 30px;
+            border-radius: 5px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #e91e63;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 10px;
+        }
+
+        input {
+            width: 95%;
+            padding: 8px;
+        }
+
+        .btn {
+            width: 120px;
+            padding: 8px;
+            background-color: #e91e63;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c2185b;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .links a {
+            text-decoration: none;
+            color: #e9e61e;
+        }
+        .nav a{
+            margin:0 15px;
+            text-decoration:none;
+            color:#FF3E6C;
+            font-weight:bold;
+        }
+
+        .nav a:hover{
+            text-decoration:underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Kingsley Private Bank Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+     <div class="nav">
+        <a href="index.html">HOME</a>
+        <a href="about.html">ABOUT</a>
+        <a href="contact.html">CONTACT</a>
+    </div>
+
+</div>
+
+<!-- Login Form -->
+<div class="container">
+    <h2>User Login</h2>
+
+    <div id="login-msg" class="msg" style="display:none; padding:10px; margin-bottom:15px; border-radius:4px; text-align:center;"></div>
+    <form id="loginForm">
+        <table>
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" id="username" required></td>
+            </tr>
+
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" id="password" required></td>
+            </tr>
+        </table>
+
+        <br>
+        <center>
+            <button type="submit" class="btn">Login</button>
+            <input type="reset" value="Reset" class="btn">
+        </center>
+    </form>
+
+    <div class="links">
+        <p>New User? <a href="DAGREGISTRATION.html">Register Here</a></p>
+        <p><a href="FORGPASSW.html">Forgot Password?</a></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const msg = document.getElementById('login-msg');
+
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success && data.role === 'customer') {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userName', data.name);
+                window.location.href = 'dashboard.html';
+            } else if (data.success) {
+                msg.className = 'msg error';
+                msg.style.display = 'block';
+                msg.style.backgroundColor = '#fce4ec';
+                msg.style.color = '#c62828';
+                msg.textContent = 'Please use the appropriate portal for your role.';
+            } else {
+                msg.className = 'msg error';
+                msg.style.display = 'block';
+                msg.style.backgroundColor = '#fce4ec';
+                msg.style.color = '#c62828';
+                msg.textContent = data.message || 'Login failed';
+            }
+        } catch (err) {
+            msg.className = 'msg error';
+            msg.style.display = 'block';
+            msg.style.backgroundColor = '#fce4ec';
+            msg.style.color = '#c62828';
+            msg.textContent = 'Server connection error';
+        }
+    });
+
+    if(localStorage.getItem('token')) {
+        window.location.href = 'dashboard.html';
+    }
+</script>
+</body>
+</html>

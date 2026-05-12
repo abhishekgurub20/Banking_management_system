@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kingsley Private Bank | My Loans</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #F5F5F7; min-height: 100vh; }
+
+.header { background: white; display: flex; align-items: center; justify-content: space-between; padding: 10px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.logo { display: flex; align-items: center; }
+.logo img { width: 70px; height: 70px; margin-right: 15px; border-radius: 50%; object-fit: cover; }
+.logo h1 { margin: 0; color: #FF3E6C; font-size: 22px; }
+.logo span { color: #666; font-size: 14px; }
+.nav a { margin: 0 12px; text-decoration: none; color: #FF3E6C; font-weight: bold; font-size: 14px; }
+.nav a:hover, .nav a.active { text-decoration: underline; }
+.header-right { display: flex; align-items: center; gap: 14px; }
+.user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #444; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: #FF3E6C; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn { padding: 7px 16px; border: none; background: #FF3E6C; color: white; cursor: pointer; border-radius: 4px; font-size: 14px; }
+.btn:hover { background: #e6335c; }
+.btn-outline { background: white; color: #FF3E6C; border: 1.5px solid #FF3E6C; }
+.btn-outline:hover { background: #fff0f3; }
+.btn-sm { padding: 5px 12px; font-size: 13px; }
+.btn-gray { background: #aaa; }
+.btn-gray:hover { background: #888; }
+.btn-green { background: #27ae60; }
+.btn-green:hover { background: #1e8449; }
+
+.page-title-bar { background: white; padding: 18px 40px; border-bottom: 1px solid #eee; }
+.page-title-bar h2 { color: #FF3E6C; font-size: 20px; }
+.page-title-bar p  { color: #888; font-size: 13px; margin-top: 4px; }
+
+.main { padding: 30px 40px 80px; }
+.section-heading { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 16px; border-left: 4px solid #FF3E6C; padding-left: 10px; }
+.panel { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; }
+.panel-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 18px; }
+.two-col { display: flex; gap: 24px; }
+.two-col .panel { flex: 1; }
+
+/* LOAN CARDS */
+.loan-cards { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+.loan-card { flex: 1; min-width: 260px; background: white; border-radius: 10px; padding: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border-left: 5px solid #FF3E6C; }
+.loan-card.personal { border-color: #8e44ad; }
+.loan-card.car { border-color: #2980b9; }
+.loan-card .loan-type { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #FF3E6C; font-weight: bold; margin-bottom: 6px; }
+.loan-card.personal .loan-type { color: #8e44ad; }
+.loan-card.car .loan-type { color: #2980b9; }
+.loan-card .loan-name { font-size: 18px; font-weight: bold; color: #222; margin-bottom: 14px; }
+.loan-info-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.loan-info-label { font-size: 12px; color: #888; }
+.loan-info-value { font-size: 13px; color: #333; font-weight: bold; }
+.loan-progress-bar { background: #f0f0f0; border-radius: 10px; height: 8px; margin: 14px 0 6px; }
+.loan-progress-fill { height: 8px; border-radius: 10px; background: #FF3E6C; }
+.loan-card.personal .loan-progress-fill { background: #8e44ad; }
+.loan-card.car .loan-progress-fill { background: #2980b9; }
+.loan-progress-text { font-size: 11px; color: #aaa; text-align: right; }
+.loan-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-bottom: 12px; }
+.badge-active { background: #e8f8f0; color: #1e7e44; }
+.badge-closed { background: #f2f2f2; color: #888; }
+.loan-actions { margin-top: 14px; display: flex; gap: 8px; }
+
+/* FORM */
+.form-row { display: flex; align-items: flex-start; margin-bottom: 14px; }
+.form-row label { width: 160px; font-size: 14px; color: #444; flex-shrink: 0; padding-top: 8px; }
+.form-row input, .form-row select, .form-row textarea { flex: 1; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; outline: none; font-family: Arial; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #FF3E6C; }
+.btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+.msg { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 14px; display: none; }
+.msg.success { background: #e8f8f0; color: #1e7e44; border: 1px solid #b2dfc6; }
+.msg.error { background: #fde8e8; color: #c0392b; border: 1px solid #f5c6c6; }
+
+/* EMI CALCULATOR */
+.calc-result { background: #fff8f9; border: 1px solid #ffd6e0; border-radius: 6px; padding: 16px; margin-top: 16px; display: none; }
+.calc-result-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f5e0e5; font-size: 14px; }
+.calc-result-row:last-child { border-bottom: none; font-weight: bold; color: #FF3E6C; }
+
+/* EMI TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #f9f9f9; color: #555; font-weight: bold; padding: 10px 12px; text-align: left; border-bottom: 2px solid #eee; }
+td { padding: 10px 12px; border-bottom: 1px solid #f2f2f2; color: #444; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fff8f9; }
+.paid { color: #27ae60; font-weight: bold; }
+.due  { color: #e67e22; font-weight: bold; }
+.overdue { color: #e74c3c; font-weight: bold; }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 8px; padding: 30px; width: 440px; }
+.modal h3 { color: #FF3E6C; margin-bottom: 16px; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+.footer { background: white; text-align: center; padding: 14px; position: fixed; bottom: 0; width: 100%; box-shadow: 0 -2px 5px rgba(0,0,0,0.08); font-size: 13px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div><h1>Kingsley Private</h1><span>Bank</span></div>
+    </div>
+    <div class="nav">
+        <a href="USER_HOME.html">DASHBOARD</a>
+        <a href="USER_ACCOUNTS.html">ACCOUNTS</a>
+        <a href="USER_LOANS.html" class="active">LOANS</a>
+        <a href="USER_PROFILE.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-badge"><div class="avatar">JD</div><span>John Doe</span></div>
+        <button class="btn btn-outline" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<div class="page-title-bar">
+    <h2>My Loans</h2>
+    <p>View active loans, check EMI schedules and apply for new loans</p>
+</div>
+
+<div class="main">
+
+    <!-- ACTIVE LOANS -->
+    <div class="section-heading">Active Loans</div>
+    <div class="loan-cards">
+        <div class="loan-card">
+            <div class="loan-type">&#127968; Home Loan</div>
+            <div class="loan-name">KPB Home Loan 2022</div>
+            <span class="loan-badge badge-active">Active</span>
+            <div class="loan-info-row"><span class="loan-info-label">Loan Amount</span><span class="loan-info-value">&#8377; 25,00,000</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Outstanding</span><span class="loan-info-value">&#8377; 18,50,000</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Monthly EMI</span><span class="loan-info-value">&#8377; 12,500</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Next Due Date</span><span class="loan-info-value">05 May 2026</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Tenure</span><span class="loan-info-value">20 Years (Started Jan 2022)</span></div>
+            <div class="loan-progress-bar"><div class="loan-progress-fill" style="width:26%"></div></div>
+            <div class="loan-progress-text">26% repaid</div>
+            <div class="loan-actions">
+                <button class="btn btn-sm" onclick="openPayEmi('Home Loan','12500')">Pay EMI</button>
+                <button class="btn btn-sm btn-outline" onclick="showSchedule()">Schedule</button>
+            </div>
+        </div>
+
+        <div class="loan-card personal">
+            <div class="loan-type">&#128188; Personal Loan</div>
+            <div class="loan-name">KPB Personal Loan 2025</div>
+            <span class="loan-badge badge-active">Active</span>
+            <div class="loan-info-row"><span class="loan-info-label">Loan Amount</span><span class="loan-info-value">&#8377; 3,00,000</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Outstanding</span><span class="loan-info-value">&#8377; 2,10,000</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Monthly EMI</span><span class="loan-info-value">&#8377; 7,200</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Next Due Date</span><span class="loan-info-value">10 May 2026</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Tenure</span><span class="loan-info-value">3 Years (Started Mar 2025)</span></div>
+            <div class="loan-progress-bar"><div class="loan-progress-fill" style="width:30%"></div></div>
+            <div class="loan-progress-text">30% repaid</div>
+            <div class="loan-actions">
+                <button class="btn btn-sm" onclick="openPayEmi('Personal Loan','7200')">Pay EMI</button>
+                <button class="btn btn-sm btn-outline" onclick="showSchedule()">Schedule</button>
+            </div>
+        </div>
+
+        <div class="loan-card car">
+            <div class="loan-type">&#128663; Car Loan</div>
+            <div class="loan-name">KPB Car Loan 2020</div>
+            <span class="loan-badge badge-closed">Closed</span>
+            <div class="loan-info-row"><span class="loan-info-label">Loan Amount</span><span class="loan-info-value">&#8377; 5,00,000</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Outstanding</span><span class="loan-info-value">&#8377; 0</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Monthly EMI</span><span class="loan-info-value">Completed</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Closed On</span><span class="loan-info-value">Feb 2025</span></div>
+            <div class="loan-info-row"><span class="loan-info-label">Tenure</span><span class="loan-info-value">5 Years</span></div>
+            <div class="loan-progress-bar"><div class="loan-progress-fill" style="width:100%"></div></div>
+            <div class="loan-progress-text">100% repaid ✓</div>
+            <div class="loan-actions">
+                <button class="btn btn-sm btn-gray" disabled>Fully Paid</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EMI SCHEDULE TABLE + APPLY LOAN -->
+    <div class="two-col">
+
+        <div class="panel" id="emiSchedulePanel">
+            <div class="panel-title">&#128197; EMI Schedule — Home Loan</div>
+            <table>
+                <thead>
+                    <tr><th>Month</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Jan 2026</td><td>&#8377;12,500</td><td>&#8377;9,200</td><td>&#8377;3,300</td><td class="paid">Paid</td></tr>
+                    <tr><td>Feb 2026</td><td>&#8377;12,500</td><td>&#8377;9,280</td><td>&#8377;3,220</td><td class="paid">Paid</td></tr>
+                    <tr><td>Mar 2026</td><td>&#8377;12,500</td><td>&#8377;9,360</td><td>&#8377;3,140</td><td class="paid">Paid</td></tr>
+                    <tr><td>Apr 2026</td><td>&#8377;12,500</td><td>&#8377;9,440</td><td>&#8377;3,060</td><td class="paid">Paid</td></tr>
+                    <tr><td>May 2026</td><td>&#8377;12,500</td><td>&#8377;9,520</td><td>&#8377;2,980</td><td class="due">Due</td></tr>
+                    <tr><td>Jun 2026</td><td>&#8377;12,500</td><td>&#8377;9,600</td><td>&#8377;2,900</td><td style="color:#aaa;">Upcoming</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">&#127358; EMI Calculator</div>
+            <div class="form-row">
+                <label>Loan Amount (&#8377;):</label>
+                <input type="number" id="calcAmt" placeholder="e.g. 500000" min="1000">
+            </div>
+            <div class="form-row">
+                <label>Interest Rate (% p.a.):</label>
+                <input type="number" id="calcRate" placeholder="e.g. 8.5" min="0.1" step="0.1">
+            </div>
+            <div class="form-row">
+                <label>Tenure (Months):</label>
+                <input type="number" id="calcTenure" placeholder="e.g. 60" min="1">
+            </div>
+            <div class="btn-row">
+                <button class="btn" onclick="calcEMI()">Calculate EMI</button>
+                <button class="btn btn-gray" onclick="clearCalc()">Clear</button>
+            </div>
+            <div class="calc-result" id="calcResult">
+                <div class="calc-result-row"><span>Monthly EMI</span><span id="emiOut">--</span></div>
+                <div class="calc-result-row"><span>Total Interest</span><span id="intOut">--</span></div>
+                <div class="calc-result-row"><span>Total Payment</span><span id="totalOut">--</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- APPLY FOR NEW LOAN -->
+    <div class="panel">
+        <div class="panel-title">&#128196; Apply for New Loan</div>
+        <div id="applyMsg" class="msg"></div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:280px;">
+                <div class="form-row">
+                    <label>Loan Type:</label>
+                    <select id="loanType">
+                        <option value="">-- Select Loan Type --</option>
+                        <option>Home Loan</option>
+                        <option>Personal Loan</option>
+                        <option>Car Loan</option>
+                        <option>Education Loan</option>
+                        <option>Gold Loan</option>
+                        <option>Business Loan</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Loan Amount (&#8377;):</label>
+                    <input type="number" id="loanAmt" placeholder="Enter amount">
+                </div>
+                <div class="form-row">
+                    <label>Tenure (Months):</label>
+                    <input type="number" id="loanTenure" placeholder="e.g. 36">
+                </div>
+            </div>
+            <div style="flex:1;min-width:280px;">
+                <div class="form-row">
+                    <label>Purpose:</label>
+                    <input type="text" id="loanPurpose" placeholder="Brief purpose of loan">
+                </div>
+                <div class="form-row">
+                    <label>Monthly Income (&#8377;):</label>
+                    <input type="number" id="loanIncome" placeholder="Your monthly income">
+                </div>
+                <div class="form-row">
+                    <label>Employment:</label>
+                    <select id="loanEmp">
+                        <option value="">-- Select --</option>
+                        <option>Salaried</option>
+                        <option>Self Employed</option>
+                        <option>Business Owner</option>
+                        <option>Student</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="btn-row">
+            <button class="btn" onclick="applyLoan()">Submit Application</button>
+            <button class="btn btn-gray" onclick="clearApply()">Clear</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- PAY EMI MODAL -->
+<div class="modal-overlay" id="payModal">
+    <div class="modal">
+        <h3>Pay EMI</h3>
+        <p id="payText" style="font-size:14px;color:#444;margin-bottom:16px;"></p>
+        <div class="form-row" style="margin-bottom:12px;">
+            <label style="width:130px;">Pay From:</label>
+            <select style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;">
+                <option>Savings — **** 4821</option>
+                <option>Current — **** 9103</option>
+            </select>
+        </div>
+        <div id="payMsg" class="msg"></div>
+        <div class="modal-btns">
+            <button class="btn btn-gray" onclick="closePayModal()">Cancel</button>
+            <button class="btn btn-green" onclick="confirmPay()">Pay Now</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer">Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM</div>
+
+<script>
+function fmt(n) { return '&#8377; ' + Number(n).toLocaleString('en-IN', {minimumFractionDigits:2}); }
+
+function calcEMI() {
+    const P = parseFloat(document.getElementById('calcAmt').value);
+    const r = parseFloat(document.getElementById('calcRate').value) / 12 / 100;
+    const n = parseInt(document.getElementById('calcTenure').value);
+    if (!P||!r||!n||P<=0||r<=0||n<=0) { alert('Please fill all fields correctly.'); return; }
+    const emi = P * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+    const totalPay = emi * n;
+    const totalInt = totalPay - P;
+    document.getElementById('emiOut').innerHTML   = fmt(emi.toFixed(2));
+    document.getElementById('intOut').innerHTML   = fmt(totalInt.toFixed(2));
+    document.getElementById('totalOut').innerHTML = fmt(totalPay.toFixed(2));
+    document.getElementById('calcResult').style.display = 'block';
+}
+
+function clearCalc() {
+    ['calcAmt','calcRate','calcTenure'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('calcResult').style.display='none';
+}
+
+function showSchedule() {
+    document.getElementById('emiSchedulePanel').scrollIntoView({behavior:'smooth'});
+}
+
+let currentLoan='', currentEmi='';
+function openPayEmi(loan, emi) {
+    currentLoan=loan; currentEmi=emi;
+    document.getElementById('payText').innerHTML = `You are about to pay EMI of <strong>${fmt(emi)}</strong> for your <strong>${loan}</strong>.`;
+    document.getElementById('payMsg').style.display='none';
+    document.getElementById('payModal').classList.add('show');
+}
+function closePayModal() { document.getElementById('payModal').classList.remove('show'); }
+function confirmPay() {
+    const msg = document.getElementById('payMsg');
+    msg.className='msg success';
+    msg.textContent='EMI payment of ' + currentEmi + ' for ' + currentLoan + ' was successful!';
+    msg.style.display='block';
+    setTimeout(closePayModal, 2000);
+}
+
+function applyLoan() {
+    const type    = document.getElementById('loanType').value;
+    const amt     = document.getElementById('loanAmt').value;
+    const tenure  = document.getElementById('loanTenure').value;
+    const purpose = document.getElementById('loanPurpose').value.trim();
+    const income  = document.getElementById('loanIncome').value;
+    const emp     = document.getElementById('loanEmp').value;
+    const msg = document.getElementById('applyMsg');
+    if (!type||!amt||!tenure||!purpose||!income||!emp) {
+        msg.className='msg error'; msg.textContent='Please fill in all fields before submitting.'; msg.style.display='block'; return;
+    }
+    msg.className='msg success';
+    msg.textContent='Your loan application has been submitted! Our team will contact you within 2-3 business days.';
+    msg.style.display='block';
+    clearApply();
+}
+
+function clearApply() {
+    ['loanType','loanAmt','loanTenure','loanPurpose','loanIncome','loanEmp'].forEach(id => {
+        const el = document.getElementById(id);
+        el.tagName==='SELECT' ? el.selectedIndex=0 : el.value='';
+    });
+}
+
+function logout() { if(confirm('Logout?')) window.location.href='DAGLOGIN.html'; }
+</script>
+</body>
+</html>

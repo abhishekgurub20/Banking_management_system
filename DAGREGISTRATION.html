@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | New User Registration</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 60px;
+            margin-right: 10px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            color: #e91e63;
+        }
+
+        .logo span {
+            color: #555;
+            font-size: 18px;
+        }
+
+        /* Registration Box */
+        .container {
+            width: 500px;
+            background-color: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 5px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #e91e63;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            padding: 8px;
+        }
+
+        input, textarea, select {
+            width: 95%;
+            padding: 6px;
+        }
+
+        .radio input, .check input {
+            width: auto;
+        }
+
+        .btn {
+            width: 120px;
+            padding: 8px;
+            background-color: #e91e63;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c2185b;
+        }
+        .nav a{
+            margin:0 15px;
+            text-decoration:none;
+            color:#FF3E6C;
+            font-weight:bold;
+        }
+
+        .nav a:hover{
+            text-decoration:underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Kingsley Private Bank Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="index.html">HOME</a>
+        <a href="about.html">ABOUT</a>
+        <a href="contact.html">CONTACT</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>New User Registration</h2>
+    <div id="reg-msg" class="msg" style="display:none; padding:10px; margin-bottom:15px; border-radius:4px; text-align:center;"></div>
+    <form id="registerForm">
+        <table>
+            <tr>
+                <td>Full Name:</td>
+                <td><input type="text" id="fullName" required></td>
+            </tr>
+
+            <tr>
+                <td>Date of Birth:</td>
+                <td><input type="date" id="dob" required></td>
+            </tr>
+
+            <tr>
+                <td>Gender:</td>
+                <td class="radio">
+                    <input type="radio" name="gender" value="Male" required> Male
+                    <input type="radio" name="gender" value="Female"> Female
+                    <input type="radio" name="gender" value="Other"> Other
+                </td>
+            </tr>
+
+            <tr>
+                <td>Account Type:</td>
+                <td>
+                    <select id="accountType" required>
+                        <option value="">Select Account Type</option>
+                        <option value="savings">Savings</option>
+                        <option value="current">Current</option>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Mobile Number:</td>
+                <td><input type="text" id="mobile" required></td>
+            </tr>
+
+            <tr>
+                <td>Email ID:</td>
+                <td><input type="email" id="email" required></td>
+            </tr>
+
+            <tr>
+                <td>Address:</td>
+                <td><textarea id="address" rows="3" required></textarea></td>
+            </tr>
+
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" id="username" required></td>
+            </tr>
+
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" id="password" required></td>
+            </tr>
+        </table>
+
+        <br>
+        <center>
+            <button type="submit" class="btn">Register</button>
+            <input type="reset" value="Reset" class="btn"><br><br>
+            <a href="DAGLOGIN.html">Already have an account? Login here</a>
+        </center>
+    </form>
+</div>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const data = {
+            fullName: document.getElementById('fullName').value,
+            dob: document.getElementById('dob').value,
+            gender: document.querySelector('input[name="gender"]:checked').value,
+            accountType: document.getElementById('accountType').value,
+            mobile: document.getElementById('mobile').value,
+            email: document.getElementById('email').value,
+            address: document.getElementById('address').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+
+        const msg = document.getElementById('reg-msg');
+
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+
+            if (result.success) {
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('userName', data.fullName);
+                msg.className = 'msg success';
+                msg.style.display = 'block';
+                msg.style.backgroundColor = '#e8f5e9';
+                msg.style.color = '#2e7d32';
+                msg.textContent = 'Registration successful! Redirecting...';
+                setTimeout(() => window.location.href = 'dashboard.html', 2000);
+            } else {
+                msg.className = 'msg error';
+                msg.style.display = 'block';
+                msg.style.backgroundColor = '#fce4ec';
+                msg.style.color = '#c62828';
+                msg.textContent = result.message || 'Registration failed';
+            }
+        } catch (err) {
+            msg.className = 'msg error';
+            msg.style.display = 'block';
+            msg.style.backgroundColor = '#fce4ec';
+            msg.style.color = '#c62828';
+            msg.textContent = 'Server connection error';
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+
+        /* ── HEADER ── */
+        .header {
+            background: white;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { display: flex; align-items: center; }
+        .logo img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+        .logo h1 { margin: 0; color: #e91e63; font-size: 22px; }
+        .logo span { color: #555; font-size: 14px; }
+
+        .nav a {
+            margin: 0 12px;
+            text-decoration: none;
+            color: #e91e63;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .nav a:hover { text-decoration: underline; }
+        .nav a.active { border-bottom: 2px solid #e91e63; padding-bottom: 2px; }
+
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fce4ec;
+            color: #e91e63;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .user-chip .avatar {
+            width: 28px; height: 28px;
+            background: #e91e63;
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold;
+        }
+        .btn-logout {
+            padding: 7px 16px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .btn-logout:hover { background: #c2185b; }
+
+        /* ── WELCOME BANNER ── */
+        .welcome-banner {
+            background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+            color: white;
+            padding: 36px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .welcome-banner h2 { font-size: 26px; margin-bottom: 6px; }
+        .welcome-banner p { font-size: 14px; opacity: 0.88; }
+        .banner-date { text-align: right; font-size: 13px; opacity: 0.85; }
+        .banner-date .date-big { font-size: 22px; font-weight: bold; display: block; }
+
+        /* ── MAIN CONTENT ── */
+        .main { padding: 30px 40px 80px; }
+
+        /* ── ACCOUNT SUMMARY CARDS ── */
+        .section-title { font-size: 17px; color: #333; font-weight: bold; margin-bottom: 16px; border-left: 4px solid #e91e63; padding-left: 10px; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 34px; }
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border-top: 4px solid #e91e63;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            text-decoration: none;
+            display: block;
+        }
+        .summary-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(233,30,99,0.15); }
+        .summary-card .card-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .summary-card .card-value { font-size: 26px; font-weight: bold; color: #222; margin-bottom: 4px; }
+        .summary-card .card-sub { font-size: 12px; color: #aaa; }
+        .summary-card .card-icon { float: right; font-size: 28px; margin-top: -4px; }
+        .card-green { border-top-color: #4caf50; }
+        .card-blue  { border-top-color: #2196f3; }
+
+        /* ── QUICK ACCESS ── */
+        .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 34px; }
+        .quick-btn {
+            background: white;
+            border: none;
+            border-radius: 8px;
+            padding: 22px 10px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            font-family: Arial, sans-serif;
+            transition: background 0.15s;
+            text-decoration: none;
+            display: block;
+            color: #333;
+        }
+        .quick-btn:hover { background: #fce4ec; }
+        .quick-btn .q-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+        .quick-btn .q-label { font-size: 13px; font-weight: bold; }
+
+        /* ── TWO-COLUMN LAYOUT ── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* ── RECENT TRANSACTIONS ── */
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .panel-header a { font-size: 13px; color: #e91e63; text-decoration: none; font-weight: bold; }
+        .panel-header a:hover { text-decoration: underline; }
+
+        .txn-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .txn-row:last-child { border-bottom: none; }
+        .txn-icon { width: 36px; height: 36px; border-radius: 50%; background: #fce4ec; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 12px; flex-shrink: 0; }
+        .txn-icon.credit { background: #e8f5e9; }
+        .txn-details { flex: 1; }
+        .txn-name { font-size: 14px; color: #333; font-weight: bold; }
+        .txn-date { font-size: 12px; color: #aaa; margin-top: 2px; }
+        .txn-amount { font-size: 15px; font-weight: bold; }
+        .txn-amount.debit { color: #e91e63; }
+        .txn-amount.credit { color: #4caf50; }
+
+        /* ── LOAN STATUS ── */
+        .loan-item { padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .loan-item:last-child { border-bottom: none; }
+        .loan-name { font-size: 14px; color: #333; font-weight: bold; margin-bottom: 6px; }
+        .loan-bar-bg { background: #f0f0f0; border-radius: 4px; height: 8px; margin-bottom: 4px; }
+        .loan-bar { height: 8px; border-radius: 4px; background: #e91e63; }
+        .loan-meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: white;
+            text-align: center;
+            padding: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.08);
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <img src="logo.jpeg" alt="Logo">
+        <div>
+            <h1>Kingsley Private</h1>
+            <span>Bank</span>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="dashboard.html" class="active">DASHBOARD</a>
+        <a href="transfer.html">TRANSFER</a>
+        <a href="transactions.html">TRANSACTIONS</a>
+        <a href="loans.html">LOANS</a>
+        <a href="profile.html">PROFILE</a>
+    </div>
+    <div class="header-right">
+        <div class="user-chip">
+            <div class="avatar">RJ</div>
+            Rahul Joshi
+        </div>
+        <button class="btn-logout" onclick="if(confirm('Logout from your account?')) window.location.href='DAGLOGIN.html'">Logout</button>
+    </div>
+</div>
+
+<!-- WELCOME BANNER -->
+<div class="welcome-banner">
+    <div>
+        <h2>Welcome back, Rahul! 👋</h2>
+        <p>Here is a summary of your Kingsley Private Bank account.</p>
+    </div>
+    <div class="banner-date">
+        <span class="date-big" id="live-date"></span>
+        <span id="live-time"></span>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <!-- SUMMARY CARDS -->
+    <div class="section-title">Account Overview</div>
+    <div class="summary-grid">
+        <a class="summary-card" href="transactions.html">
+            <span class="card-icon">🏦</span>
+            <div class="card-label">Savings Account</div>
+            <div class="card-value">₹1,24,500.00</div>
+            <div class="card-sub">A/C No: XXXX-XXXX-4821</div>
+        </a>
+        <a class="summary-card card-green" href="transactions.html">
+            <span class="card-icon">💳</span>
+            <div class="card-label">Current Account</div>
+            <div class="card-value">₹45,200.00</div>
+            <div class="card-sub">A/C No: XXXX-XXXX-7734</div>
+        </a>
+        <a class="summary-card card-blue" href="loans.html">
+            <span class="card-icon">📋</span>
+            <div class="card-label">Active Loans</div>
+            <div class="card-value">2 Active</div>
+            <div class="card-sub">Next EMI due: 15 May 2026</div>
+        </a>
+    </div>
+
+    <!-- QUICK ACCESS -->
+    <div class="section-title">Quick Actions</div>
+    <div class="quick-grid">
+        <a class="quick-btn" href="transactions.html">
+            <span class="q-icon">💸</span>
+            <span class="q-label">Fund Transfer</span>
+        </a>
+        <a class="quick-btn" href="transactions.html">
+            <span class="q-icon">📜</span>
+            <span class="q-label">Mini Statement</span>
+        </a>
+        <a class="quick-btn" href="loans.html">
+            <span class="q-icon">🏠</span>
+            <span class="q-label">Apply for Loan</span>
+        </a>
+        <a class="quick-btn" href="profile.html">
+            <span class="q-icon">👤</span>
+            <span class="q-label">My Profile</span>
+        </a>
+    </div>
+
+    <!-- TWO COLUMN -->
+    <div class="two-col">
+
+        <!-- RECENT TRANSACTIONS -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="section-title" style="margin:0">Recent Transactions</span>
+                <a href="transactions.html">View All →</a>
+            </div>
+            <div class="txn-row">
+                <div class="txn-icon">🛒</div>
+                <div class="txn-details">
+                    <div class="txn-name">Online Shopping</div>
+                    <div class="txn-date">10 Apr 2026</div>
+                </div>
+                <div class="txn-amount debit">- ₹3,200</div>
+            </div>
+            <div class="txn-row">
+                <div class="txn-icon credit">💰</div>
+                <div class="txn-details">
+                    <div class="txn-name">Salary Credit</div>
+                    <div class="txn-date">01 Apr 2026</div>
+                </div>
+                <div class="txn-amount credit">+ ₹55,000</div>
+            </div>
+            <div class="txn-row">
+                <div class="txn-icon">⚡</div>
+                <div class="txn-details">
+                    <div class="txn-name">Electricity Bill</div>
+                    <div class="txn-date">28 Mar 2026</div>
+                </div>
+                <div class="txn-amount debit">- ₹1,450</div>
+            </div>
+            <div class="txn-row">
+                <div class="txn-icon credit">💰</div>
+                <div class="txn-details">
+                    <div class="txn-name">UPI Received</div>
+                    <div class="txn-date">25 Mar 2026</div>
+                </div>
+                <div class="txn-amount credit">+ ₹8,000</div>
+            </div>
+            <div class="txn-row">
+                <div class="txn-icon">🏠</div>
+                <div class="txn-details">
+                    <div class="txn-name">Home Loan EMI</div>
+                    <div class="txn-date">15 Mar 2026</div>
+                </div>
+                <div class="txn-amount debit">- ₹22,000</div>
+            </div>
+        </div>
+
+        <!-- LOAN STATUS -->
+        <div class="panel">
+            <div class="panel-header">
+                <span class="section-title" style="margin:0">Loan Status</span>
+                <a href="loans.html">Manage →</a>
+            </div>
+            <div id="dash-loans-container">
+                <div style="padding:10px; color:#888;">Loading...</div>
+            </div>
+            <div style="margin-top: 12px;">
+                <a href="loans.html" style="display:inline-block; margin-top:8px; padding:9px 20px; background:#e91e63; color:white; border-radius:4px; text-decoration:none; font-size:13px; font-weight:bold;">Apply for New Loan</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'DAGLOGIN.html';
+
+    const userName = localStorage.getItem('userName') || 'User';
+    document.querySelector('.user-chip').innerHTML = `<div class="avatar">${userName.substring(0, 2).toUpperCase()}</div> ${userName}`;
+    document.querySelector('.welcome-banner h2').textContent = `Welcome back, ${userName}! 👋`;
+
+    async function loadDashboard() {
+        try {
+            // Load Accounts
+            const accRes = await fetch('http://localhost:5000/api/accounts', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const accData = await accRes.json();
+            
+            if (accData.success) {
+                const savings = accData.accounts.find(a => a.account_type === 'savings');
+                const current = accData.accounts.find(a => a.account_type === 'current');
+                
+                if (savings) {
+                    document.querySelector('.summary-card:nth-child(1) .card-value').textContent = `₹${Number(savings.balance).toLocaleString('en-IN')}`;
+                    document.querySelector('.summary-card:nth-child(1) .card-sub').textContent = `A/C No: ${savings.account_number}`;
+                }
+                if (current) {
+                    document.querySelector('.summary-card:nth-child(2) .card-value').textContent = `₹${Number(current.balance).toLocaleString('en-IN')}`;
+                    document.querySelector('.summary-card:nth-child(2) .card-sub').textContent = `A/C No: ${current.account_number}`;
+                }
+            }
+
+            // Load Transactions
+            const txnRes = await fetch('http://localhost:5000/api/transactions', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const txnData = await txnRes.json();
+            
+            if (txnData.success) {
+                const panel = document.querySelector('.two-col .panel:nth-child(1)');
+                // Clear old rows
+                panel.querySelectorAll('.txn-row').forEach(e => e.remove());
+                
+                txnData.transactions.slice(0, 5).forEach(t => {
+                    const sign = t.type === 'debit' ? '-' : '+';
+                    const icon = t.type === 'debit' ? '💳' : '💰';
+                    const iconClass = t.type === 'credit' ? 'txn-icon credit' : 'txn-icon';
+                    const amountClass = t.type === 'credit' ? 'txn-amount credit' : 'txn-amount debit';
+                    
+                    const html = `
+                    <div class="txn-row">
+                        <div class="${iconClass}">${icon}</div>
+                        <div class="txn-details">
+                            <div class="txn-name">${t.description}</div>
+                            <div class="txn-date">${new Date(t.txn_date).toLocaleDateString('en-IN')}</div>
+                        </div>
+                        <div class="${amountClass}">${sign} ₹${Number(t.amount).toLocaleString('en-IN')}</div>
+                    </div>`;
+                    panel.insertAdjacentHTML('beforeend', html);
+                });
+            }
+
+            // Load Loans
+            const loanRes = await fetch('http://localhost:5000/api/loans', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const loanData = await loanRes.json();
+            
+            if(loanData.success) {
+                document.querySelector('.summary-card.card-blue .card-value').textContent = `${loanData.loans.length} Loans`;
+                const lcontainer = document.getElementById('dash-loans-container');
+                lcontainer.innerHTML = '';
+                if(loanData.loans.length === 0) {
+                    lcontainer.innerHTML = '<div style="padding:10px; color:#888;">No active loans.</div>';
+                }
+                loanData.loans.forEach(loan => {
+                    let progress = 0;
+                    if(loan.principal_amount > 0) {
+                        progress = Math.min(100, Math.round((Number(loan.amount_paid) / Number(loan.principal_amount)) * 100));
+                    }
+                    lcontainer.innerHTML += `
+                    <div class="loan-item">
+                        <div class="loan-name">${loan.loan_type}</div>
+                        <div class="loan-bar-bg"><div class="loan-bar" style="width:${progress}%"></div></div>
+                        <div class="loan-meta">
+                            <span>Paid: ₹${Number(loan.amount_paid || 0).toLocaleString('en-IN')}</span>
+                            <span>Remaining: ₹${Number(loan.amount_remaining || 0).toLocaleString('en-IN')}</span>
+                        </div>
+                    </div>`;
+                });
+            }
+
+        } catch (err) {
+            console.error('Error loading dashboard data', err);
+        }
+    }
+
+    function logoutFunc() {
+        if(confirm('Logout from your account?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = 'DAGLOGIN.html';
+        }
+    }
+
+    document.querySelector('.btn-logout').setAttribute('onclick', 'logoutFunc()');
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-date').textContent = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+        document.getElementById('live-time').textContent = now.toLocaleTimeString('en-IN');
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+    
+    loadDashboard();
+</script>
+</body>
+</html>

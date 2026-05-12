@@ -1,0 +1,92 @@
+body{
+    margin:0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:#F5F5F7;
+}
+
+.header{
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 30px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+}
+
+.logo img{
+    width:70px;
+    height:70px;
+    margin-right:15px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+}
+
+.logo h1{
+    margin:0;
+    color:#FF3E6C;
+}
+
+.logo span{
+    color:#666;
+}
+
+.nav a{
+    margin:0 15px;
+    text-decoration:none;
+    color:#FF3E6C;
+    font-weight:bold;
+}
+
+.nav a:hover{
+    text-decoration:underline;
+}
+
+.btn{
+    padding:6px 14px;
+    border:none;
+    background:#FF3E6C;
+    color:white;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.btn:hover{
+    background:#e6335c;
+}
+
+.container{
+    padding:40px;
+    text-align:center;
+}
+
+.footer{
+    background:white;
+    text-align:center;
+    padding:15px;
+    position:fixed;
+    bottom:0;
+    width:100%;
+    box-shadow:0 -2px 5px rgba(0,0,0,0.1);
+}
+
+/* Card used for centered white boxes (login, forgot password, etc.) */
+.card{
+    width:480px;
+    background:white;
+    margin:40px auto;
+    padding:30px;
+    border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    text-align:left;
+}
+
+.card h2{ text-align:center; color:#FF3E6C; margin-top:0; }
+
+.links{ text-align:center; margin-top:16px; }
+.links a{ color:#FF3E6C; text-decoration:none; }

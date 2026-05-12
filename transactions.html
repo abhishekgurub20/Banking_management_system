@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kingsley Private Bank | Transactions</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: white;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #ccc;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            color: #e91e63;
+            font-size: 22px;
+        }
+
+        .logo span {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .nav a {
+            margin: 0 12px;
+            text-decoration: none;
+            color: #e91e63;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .nav a.active {
+            border-bottom: 2px solid #e91e63;
+            padding-bottom: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fce4ec;
+            color: #e91e63;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .user-chip .avatar {
+            width: 28px;
+            height: 28px;
+            background: #e91e63;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-logout {
+            padding: 7px 16px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .btn-logout:hover {
+            background: #c2185b;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+            color: white;
+            padding: 28px 40px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            opacity: 0.88;
+        }
+
+        /* ── MAIN ── */
+        .main {
+            padding: 28px 40px 80px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 16px;
+            border-left: 4px solid #e91e63;
+            padding-left: 10px;
+        }
+
+        /* ── ACCOUNT TABS ── */
+        .acc-tabs {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .acc-tab {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px 22px;
+            cursor: pointer;
+            min-width: 200px;
+            transition: border-color 0.2s;
+        }
+
+        .acc-tab.selected {
+            border-color: #e91e63;
+        }
+
+        .acc-tab .tab-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .acc-tab .tab-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .acc-tab .tab-num {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        /* ── TRANSFER FORM ── */
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 24px 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
+            font-size: 13px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-field input,
+        .form-field select {
+            padding: 9px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            outline: none;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus {
+            border-color: #e91e63;
+        }
+
+        .btn-pink {
+            padding: 10px 28px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .btn-pink:hover {
+            background: #c2185b;
+        }
+
+        .btn-gray {
+            padding: 10px 22px;
+            background: #aaa;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 8px;
+            margin-left: 8px;
+        }
+
+        .btn-gray:hover {
+            background: #888;
+        }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            outline: none;
+        }
+
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            border-color: #e91e63;
+        }
+
+        .filter-bar label {
+            font-size: 12px;
+            color: #666;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        /* ── TRANSACTIONS TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead tr {
+            background: #e91e63;
+            color: white;
+        }
+
+        thead td {
+            padding: 11px 14px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        tbody td {
+            padding: 11px 14px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-debit {
+            background: #fce4ec;
+            color: #e91e63;
+        }
+
+        .badge-credit {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .amount-debit {
+            color: #e91e63;
+            font-weight: bold;
+        }
+
+        .amount-credit {
+            color: #388e3c;
+            font-weight: bold;
+        }
+
+        /* ── PAGINATION ── */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .page-btn {
+            padding: 7px 13px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .page-btn.active {
+            background: #e91e63;
+            color: white;
+            border-color: #e91e63;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: #fce4ec;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            background: white;
+            text-align: center;
+            padding: 14px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.08);
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* ── SUCCESS MSG ── */
+        .msg {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-top: 14px;
+            font-size: 13px;
+        }
+
+        .msg.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #b2dfdb;
+            display: block;
+        }
+
+        .msg.error {
+            background: #fce4ec;
+            color: #c62828;
+            border: 1px solid #f5c6c6;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">
+            <img src="logo.jpeg" alt="Logo">
+            <div>
+                <h1>Kingsley Private</h1>
+                <span>Bank</span>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="dashboard.html">DASHBOARD</a>
+            <a href="transfer.html">TRANSFER</a>
+            <a href="transactions.html" class="active">TRANSACTIONS</a>
+            <a href="loans.html">LOANS</a>
+            <a href="profile.html">PROFILE</a>
+        </div>
+        <div class="header-right">
+            <div class="user-chip">
+                <div class="avatar">RJ</div>
+                Rahul Joshi
+            </div>
+            <button class="btn-logout"
+                onclick="if(confirm('Logout from your account?')) window.location.href='DAGLOGIN.html'">Logout</button>
+        </div>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h2>💳 Transaction Accounts</h2>
+        <p>Manage your accounts, transfer funds, and view your transaction history.</p>
+    </div>
+
+    <div class="main">
+
+        <!-- ACCOUNT SELECTOR -->
+        <div class="section-title">Select Account</div>
+        <div class="acc-tabs">
+            <div class="acc-tab selected" onclick="selectTab(this)">
+                <div class="tab-label">Savings Account</div>
+                <div class="tab-value">₹1,24,500.00</div>
+                <div class="tab-num">A/C: XXXX-XXXX-4821</div>
+            </div>
+            <div class="acc-tab" onclick="selectTab(this)">
+                <div class="tab-label">Current Account</div>
+                <div class="tab-value">₹45,200.00</div>
+                <div class="tab-num">A/C: XXXX-XXXX-7734</div>
+            </div>
+        </div>
+
+        <!-- FUND TRANSFER -->
+        <div class="section-title">Fund Transfer</div>
+        <div class="panel">
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>From Account</label>
+                    <select id="from-account">
+                        <option value="1">Loading accounts...</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Transfer Type</label>
+                    <select>
+                        <option>NEFT</option>
+                        <option>RTGS</option>
+                        <option>IMPS</option>
+                        <option>UPI</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label>Beneficiary Account Number</label>
+                    <input type="text" id="ben-acc" placeholder="Enter account number">
+                </div>
+                <div class="form-field">
+                    <label>Beneficiary Name</label>
+                    <input type="text" id="ben-name" placeholder="Enter beneficiary name">
+                </div>
+                <div class="form-field">
+                    <label>IFSC Code</label>
+                    <input type="text" id="ifsc" placeholder="e.g. SBIN0001234">
+                </div>
+                <div class="form-field">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="Enter amount" min="1">
+                </div>
+                <div class="form-field">
+                    <label>Remarks (Optional)</label>
+                    <input type="text" id="remarks" placeholder="e.g. Rent, Loan repayment">
+                </div>
+            </div>
+            <div id="transfer-msg" class="msg"></div>
+            <button class="btn-pink" onclick="doTransfer()">Transfer Now</button>
+            <button class="btn-gray" onclick="clearTransfer()">Clear</button>
+        </div>
+
+        <!-- TRANSACTION HISTORY -->
+        <div class="section-title">Transaction History</div>
+        <div class="panel">
+            <div class="filter-bar">
+                <div>
+                    <label>From Date</label>
+                    <input type="date" id="from-date">
+                </div>
+                <div>
+                    <label>To Date</label>
+                    <input type="date" id="to-date">
+                </div>
+                <div>
+                    <label>Type</label>
+                    <select id="filter-type" onchange="filterTxns()">
+                        <option value="all">All</option>
+                        <option value="credit">Credit</option>
+                        <option value="debit">Debit</option>
+                    </select>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button class="btn-pink" style="margin:0;padding:8px 18px;" onclick="filterTxns()">Filter</button>
+                </div>
+            </div>
+
+            <table id="txn-table">
+                <thead>
+                    <tr>
+                        <td>Date</td>
+                        <td>Description</td>
+                        <td>Reference No.</td>
+                        <td>Type</td>
+                        <td>Amount</td>
+                        <td>Balance</td>
+                    </tr>
+                </thead>
+                <tbody id="txn-body">
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">Next →</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Abhishek || Akshat || Atharv || Dhairya — BANKING MANAGEMENT SYSTEM
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'DAGLOGIN.html';
+
+        const userName = localStorage.getItem('userName') || 'User';
+        document.querySelector('.user-chip').innerHTML = `<div class="avatar">${userName.substring(0, 2).toUpperCase()}</div> ${userName}`;
+
+        let accountBalances = {};
+
+        async function loadAccounts() {
+            try {
+                const accRes = await fetch('http://localhost:5000/api/accounts', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const accData = await accRes.json();
+
+                if (accData.success) {
+                    const accountsContainer = document.querySelector('.acc-tabs');
+                    accountsContainer.innerHTML = '';
+                    const fromAccountSelect = document.getElementById('from-account');
+
+                    if (fromAccountSelect) {
+                        fromAccountSelect.innerHTML = '';
+                    }
+
+                    accData.accounts.forEach((acc, index) => {
+                        accountBalances[acc.id] = acc.balance;
+
+                        const html = `
+                    <div class="acc-tab ${index === 0 ? 'selected' : ''}" onclick="selectTab(this, ${acc.id})">
+                        <div class="tab-label">${acc.account_type.toUpperCase()} ACCOUNT</div>
+                        <div class="tab-value">₹${Number(acc.balance).toLocaleString('en-IN')}</div>
+                        <div class="tab-num">A/C: ${acc.account_number}</div>
+                    </div>`;
+                        accountsContainer.innerHTML += html;
+
+                        if (fromAccountSelect) {
+                            fromAccountSelect.innerHTML += `<option value="${acc.id}">${acc.account_type.toUpperCase()} - ${acc.account_number} (₹${acc.balance})</option>`;
+                        }
+                    });
+                }
+            } catch (e) { console.error('Error fetching accounts', e); }
+        }
+
+        async function loadTransactions() {
+            try {
+                const res = await fetch('http://localhost:5000/api/transactions', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.allTransactions = data.transactions;
+                    renderTxns(data.transactions);
+                }
+            } catch (e) { console.error('Error fetching transactions', e); }
+        }
+
+        function renderTxns(data) {
+            const tbody = document.getElementById('txn-body');
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#aaa;">No transactions found.</td></tr>';
+                return;
+            }
+            data.forEach(t => {
+                const sign = t.type === 'debit' ? '-' : '+';
+                tbody.innerHTML += `<tr>
+                <td>${new Date(t.txn_date).toLocaleDateString()}</td>
+                <td>${t.description}</td>
+                <td style="color:#888">${t.reference_number || 'N/A'}</td>
+                <td><span class="badge badge-${t.type}">${t.type.toUpperCase()}</span></td>
+                <td class="amount-${t.type}">${sign} ₹${Number(t.amount).toLocaleString('en-IN')}</td>
+                <td>₹${Number(t.balance_after).toLocaleString('en-IN')}</td>
+            </tr>`;
+            });
+        }
+
+        function filterTxns() {
+            if (!window.allTransactions) return;
+            const type = document.getElementById('filter-type').value;
+            const filtered = type === 'all' ? window.allTransactions : window.allTransactions.filter(t => t.type === type);
+            renderTxns(filtered);
+        }
+
+        function selectTab(el, id) {
+            document.querySelectorAll('.acc-tab').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        async function doTransfer() {
+            const accId = document.getElementById('from-account') ? document.getElementById('from-account').value : 1;
+            const accNo = document.getElementById('ben-acc').value.trim();
+            const amt = document.getElementById('amount').value.trim();
+            const msg = document.getElementById('transfer-msg');
+
+            if (!accId || !accNo || !amt) {
+                msg.className = 'msg error'; msg.textContent = 'Please fill in all required fields.'; return;
+            }
+
+            try {
+                msg.className = 'msg'; msg.style.display = 'block'; msg.textContent = 'Processing...';
+
+                const res = await fetch('http://localhost:5000/api/transactions/transfer', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fromAccountId: accId,
+                        toAccountNumber: accNo,
+                        amount: Number(amt)
+                    })
+                });
+                const result = await res.json();
+
+                if (result.success) {
+                    msg.className = 'msg success';
+                    msg.textContent = `✔ ₹${Number(amt).toLocaleString('en-IN')} transferred successfully!`;
+                    clearTransfer();
+                    loadAccounts();
+                    loadTransactions(); // refresh history
+                } else {
+                    msg.className = 'msg error';
+                    msg.textContent = result.message || 'Transfer failed.';
+                }
+            } catch (e) {
+                msg.className = 'msg error';
+                msg.textContent = 'Connection error.';
+            }
+        }
+
+        function clearTransfer() {
+            ['ben-acc', 'ben-name', 'ifsc', 'amount', 'remarks'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+        }
+
+        loadAccounts();
+        loadTransactions();
+    </script>
+</body>
+
+</html>

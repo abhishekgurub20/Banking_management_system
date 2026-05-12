@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kingsley Private Bank | Excellence in Wealth Management</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF3E6C;
+            --primary-dark: #E91E63;
+            --primary-light: #fce4ec;
+            --dark: #1A1A2E;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --white: #FFFFFF;
+            --bg-light: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-light);
+        }
+
+        .logo-text h1 {
+            font-size: 22px;
+            color: var(--primary);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .logo-text span {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-fill {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn-fill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 10% 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: radial-gradient(circle at top right, var(--primary-light), var(--bg-light));
+            min-height: 100vh;
+            gap: 50px;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--white);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h2 {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--dark);
+            margin-bottom: 25px;
+        }
+
+        .hero h2 span {
+            color: var(--primary);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .stat-item h4 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .stat-item p {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        .hero-visual {
+            flex: 1;
+            position: relative;
+            animation: slideInRight 1s ease-out;
+        }
+
+        .card-mockup {
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            position: relative;
+            z-index: 2;
+        }
+
+        .floating-card {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(135deg, var(--dark), #3a3a5c);
+            border-radius: 16px;
+            padding: 24px;
+            color: white;
+            position: relative;
+            box-shadow: 0 20px 30px rgba(26, 26, 46, 0.2);
+            transform: rotate(-5deg);
+            transition: transform 0.5s ease;
+        }
+
+        .floating-card:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .card-chip {
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .card-no {
+            font-size: 22px;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 10%;
+            background: var(--white);
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+
+        .grid-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            padding: 40px 30px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: left;
+            border: 1px solid rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            background: var(--white);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.7);
+            padding: 60px 10% 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 50px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 40px;
+        }
+
+        .footer-brand h2 {
+            color: var(--white);
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .footer-brand span {
+            color: var(--primary);
+        }
+
+        .footer-links h4 {
+            color: var(--white);
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; padding-top: 120px; text-align: center; }
+            .hero-stats { justify-content: center; }
+            .nav-links { display: none; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo">
+            <img src="logo.jpeg" alt="Kingsley Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI0U5MUU2MyIvPjx0ZXh0IHg9IjMyIiB5PSI2MCIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjQwIj5LPC90ZXh0Pjwvc3ZnPg=='">
+            <div class="logo-text">
+                <h1>Kingsley</h1>
+                <span>Private Bank</span>
+            </div>
+        </a>
+        
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#services">Services</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+        </div>
+
+        <div class="auth-buttons" id="authLinks">
+            <a href="DAGLOGIN.html" class="btn btn-outline">Login</a>
+            <a href="DAGREGISTRATION.html" class="btn btn-fill">Open Account</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">🌟 Next-Gen Wealth Management</div>
+            <h2>Banking for the <span>Modern</span> Era.</h2>
+            <p>Experience seamless, secure, and intelligent banking tailored for you. From zero-fee international transfers to automated wealth growth, Kingsley Private Bank elevates your financial journey.</p>
+            
+            <div style="display: flex; gap: 15px;">
+                <a href="DAGREGISTRATION.html" class="btn btn-fill" style="padding: 15px 35px; font-size: 16px;">Get Started Today</a>
+                <a href="#services" class="btn btn-outline" style="padding: 15px 35px; border-color: rgba(26,26,46,0.2); color: var(--dark);">Explore Features</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <h4>2.5M+</h4>
+                    <p>Active Users</p>
+                </div>
+                <div class="stat-item">
+                    <h4>$10B+</h4>
+                    <p>Assets Managed</p>
+                </div>
+                <div class="stat-item">
+                    <h4>4.9/5</h4>
+                    <p>Customer Rating</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="card-mockup">
+                <div class="floating-card">
+                    <div class="card-chip"></div>
+                    <div class="card-no">4532  8821  XXXX  9012</div>
+                    <div class="card-bottom">
+                        <div>
+                            <div style="font-size: 10px; opacity: 0.6;">Cardholder</div>
+                            <div style="font-weight: 600; margin-top: 3px;">RAHUL JOSHI</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 10px; opacity: 0.6;">Valid Thru</div>
+                            <div style="font-weight: 600; margin-top: 3px;">12/28</div>
+                        </div>
+                    </div>
+                    <!-- Stylistic circles -->
+                    <div style="position:absolute; right: 20px; bottom: 20px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.4);"></div>
+                    <div style="position:absolute; right: 35px; bottom: 20px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.2);"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="features" id="services">
+        <h2 class="section-title">Everything you need exactly where you need it</h2>
+        <p class="section-title" style="font-size: 18px; color: var(--text-light); margin-bottom: 60px;">We’ve combined cutting-edge technology with world-class security.</p>
+        
+        <div class="grid-features">
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Bank-Grade Security</h3>
+                <p>Your money and data are protected by military-grade AES-256 encryption, Biometric 2FA, and constant AI-driven fraud monitoring.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Transfers</h3>
+                <p>Send and receive money globally in seconds. Enjoy real-time IMPS, NEFT, and RTGS clearing with absolutely zero hidden fees.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Smart Loans</h3>
+                <p>Access high-value loans with competitive EMI structures. Approval algorithms process applications up to 10x faster than traditional banks.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Digital First</h3>
+                <p>Manage cards, download statements, block accounts, and track expenses smoothly through our premium, user-friendly interface.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>Kingsley <span>Bank</span></h2>
+                <p style="margin-bottom: 20px; line-height: 1.6;">Where private banking meets technological innovation. Secure your wealth and grow intelligently with us.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact Support</a></li>
+                    <li><a href="DAGLOGIN.html">Customer Login</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Security Center</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Developed by Abhishek || Akshat || Atharv || Dhairya</p>
+            <p style="margin-top: 10px; opacity: 0.5;">&copy; 2026 Kingsley Private Bank. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Auth Check Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if(token) {
+                document.getElementById('authLinks').innerHTML = `
+                    <a href="dashboard.html" class="btn btn-outline" style="background:var(--primary-light);">My Dashboard</a>
+                    <button class="btn btn-fill" onclick="logout()" style="background:var(--dark);">Logout</button>
+                    <a href="admin/admin-login.html" style="margin-top:10px;font-size:12px;opacity:0.6;display:block;">Admin</a>
+                    <a href="banker/banker-login.html" style="margin-top:10px;font-size:12px;opacity:0.6;margin-left:10px;">Banker</a>
+                `;
+            } else {
+                 document.getElementById('authLinks').innerHTML += `
+                    <a href="admin/admin-login.html" style="color:var(--text-light); text-decoration:none; font-size:13px; align-self:center;">Admin Portal</a>
+                `;
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
