@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Banker Dashboard | Kingsley Private Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #0d1b2a; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-logo { padding: 24px 20px; background: linear-gradient(135deg,#2196f3,#1565c0); text-align: center; }
+        .sidebar-logo h2 { font-size: 20px; font-weight: 700; }
+        .sidebar-logo span { font-size: 11px; opacity: 0.85; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-links { list-style: none; padding: 16px 0; flex: 1; }
+        .nav-links li a { display: flex; align-items: center; gap: 12px; padding: 13px 24px; color: #7a90a4; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(33,150,243,0.12); color: #fff; border-left-color: #2196f3; }
+        .nav-links li a .icon { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid #1e3048; }
+        .logout-btn { width: 100%; padding: 11px; background: #f44336; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 5; }
+        .topbar-title { font-size: 20px; font-weight: 700; color: #0d1b2a; }
+        .banker-badge { display: flex; align-items: center; gap: 10px; }
+        .banker-badge .avatar { width: 36px; height: 36px; background: linear-gradient(135deg,#2196f3,#1565c0); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; }
+        .banker-badge .name { font-size: 14px; font-weight: 600; color: #333; }
+        .banker-badge .role-tag { font-size: 11px; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+        .content { padding: 28px 32px; flex: 1; }
+        .page-title { font-size: 22px; font-weight: 700; color: #0d1b2a; margin-bottom: 24px; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 4px solid #2196f3; }
+        .stat-card.orange { border-top-color: #ff9800; }
+        .stat-card.green  { border-top-color: #4caf50; }
+        .stat-card.red    { border-top-color: #f44336; }
+        .stat-card.purple { border-top-color: #9c27b0; }
+        .stat-card h3 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+        .stat-card .val { font-size: 28px; font-weight: 700; color: #0d1b2a; }
+
+        .panels-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 22px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .panel-title { font-size: 16px; font-weight: 700; color: #0d1b2a; }
+        .panel-link { font-size: 13px; color: #2196f3; text-decoration: none; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 10px 12px; font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; text-align: left; }
+        td { padding: 11px 12px; font-size: 13px; color: #444; border-bottom: 1px solid #f7f7f7; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f9fbff; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+        .badge.pending      { background: #fff8e1; color: #f57f17; }
+        .badge.under_review { background: #e3f2fd; color: #1565c0; }
+        .badge.approved     { background: #e8f5e9; color: #2e7d32; }
+        .badge.rejected     { background: #ffebee; color: #c62828; }
+        .tasks-list { list-style: none; }
+        .tasks-list li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #444; }
+        .tasks-list li:last-child { border-bottom: none; }
+        .tasks-list li .dot { width: 8px; height: 8px; border-radius: 50%; background: #2196f3; flex-shrink: 0; }
+        .tasks-list li .dot.orange { background: #ff9800; }
+        .tasks-list li .dot.red    { background: #f44336; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Kingsley Bank</h2>
+        <span>Banker Portal</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="banker-dashboard.html" class="active"><span class="icon">📊</span> Dashboard</a></li>
+        <li><a href="banker-customers.html"><span class="icon">👥</span> My Customers</a></li>
+        <li><a href="banker-loans.html"><span class="icon">💰</span> Loan Reviews</a></li>
+        <li><a href="banker-kyc.html"><span class="icon">📄</span> KYC Approvals</a></li>
+        <li><a href="banker-deposits.html"><span class="icon">📥</span> Deposit Requests</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">Banker Dashboard</div>
+        <div class="banker-badge">
+            <div class="avatar" id="bankerInitial">B</div>
+            <div>
+                <div class="name" id="bankerNameDisplay">Banker</div>
+                <div class="role-tag">Banker</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="page-title">Good day, <span id="bankerNameHero" style="color:#2196f3;">Banker</span> 👋</div>
+
+        <div class="stats-grid">
+            <div class="stat-card orange">
+                <h3>Pending Loans</h3>
+                <div class="val" id="pendingLoans">--</div>
+            </div>
+            <div class="stat-card">
+                <h3>Under Review</h3>
+                <div class="val" id="underReview">--</div>
+            </div>
+            <div class="stat-card red">
+                <h3>Pending KYC</h3>
+                <div class="val" id="pendingKyc">--</div>
+            </div>
+            <div class="stat-card green">
+                <h3>Reviewed Today</h3>
+                <div class="val" id="myReviewed">--</div>
+            </div>
+            <div class="stat-card purple">
+                <h3>Total Customers</h3>
+                <div class="val" id="totalCustomers">--</div>
+            </div>
+        </div>
+
+        <div class="panels-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Pending Loan Applications</div>
+                    <a href="banker-loans.html" class="panel-link">Review All →</a>
+                </div>
+                <table>
+                    <thead><tr><th>Loan ID</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody id="recentLoansBody"><tr><td colspan="4" style="text-align:center;color:#bbb;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">Today's Tasks</div>
+                </div>
+                <ul class="tasks-list">
+                    <li><div class="dot orange"></div> Review all pending loan applications</li>
+                    <li><div class="dot red"></div> Complete pending KYC verifications</li>
+                    <li><div class="dot"></div> Check customer queries and updates</li>
+                    <li><div class="dot"></div> Update loan statuses under review</li>
+                    <li><div class="dot"></div> Maintain SLA for response time</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('bankerToken');
+    if (!token) window.location.href = 'banker-login.html';
+
+    const bankerName = localStorage.getItem('bankerName') || 'Banker';
+    document.getElementById('bankerNameDisplay').textContent = bankerName;
+    document.getElementById('bankerNameHero').textContent    = bankerName;
+    document.getElementById('bankerInitial').textContent     = bankerName.charAt(0).toUpperCase();
+
+    async function loadDashboard() {
+        try {
+            const res  = await fetch('http://localhost:5000/api/banker/dashboard', { headers: { 'Authorization': `Bearer ${token}` }});
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            const data = await res.json();
+            if (data.success) {
+                const s = data.stats;
+                document.getElementById('pendingLoans').textContent   = s.pending_loans;
+                document.getElementById('underReview').textContent    = s.under_review;
+                document.getElementById('pendingKyc').textContent     = s.pending_kyc;
+                document.getElementById('myReviewed').textContent     = s.my_reviewed;
+                document.getElementById('totalCustomers').textContent = s.total_customers;
+
+                const lb = document.getElementById('recentLoansBody');
+                lb.innerHTML = data.recent_loans.length ? data.recent_loans.map(l => `
+                    <tr>
+                        <td style="font-size:12px;">${l.loan_id_str}</td>
+                        <td>${l.full_name}</td>
+                        <td>₹${Number(l.principal_amount).toLocaleString('en-IN',{maximumFractionDigits:0})}</td>
+                        <td><span class="badge ${l.status}">${l.status.replace('_',' ')}</span></td>
+                    </tr>`).join('') : '<tr><td colspan="4" style="text-align:center;color:#bbb;">No pending loans 🎉</td></tr>';
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    function logout() {
+        localStorage.removeItem('bankerToken');
+        localStorage.removeItem('bankerName');
+        window.location.href = 'banker-login.html';
+    }
+
+    loadDashboard();
+</script>
+</body>
+</html>

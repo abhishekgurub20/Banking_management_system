@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loan Reviews | Banker Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #0d1b2a; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-logo { padding: 24px 20px; background: linear-gradient(135deg,#2196f3,#1565c0); text-align: center; }
+        .sidebar-logo h2 { font-size: 20px; font-weight: 700; }
+        .sidebar-logo span { font-size: 11px; opacity: 0.85; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-links { list-style: none; padding: 16px 0; flex: 1; }
+        .nav-links li a { display: flex; align-items: center; gap: 12px; padding: 13px 24px; color: #7a90a4; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(33,150,243,0.12); color: #fff; border-left-color: #2196f3; }
+        .nav-links li a .icon { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid #1e3048; }
+        .logout-btn { width: 100%; padding: 11px; background: #f44336; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .topbar-title { font-size: 20px; font-weight: 700; color: #0d1b2a; }
+        .content { padding: 28px 32px; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: #666; transition: all 0.2s; }
+        .filter-btn.active, .filter-btn:hover { border-color: #2196f3; color: #2196f3; background: #e3f2fd; }
+
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #0d1b2a; color: #7a90a4; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        tbody td { padding: 13px 16px; font-size: 13px; color: #444; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f9fbff; }
+
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+        .badge.pending      { background: #fff8e1; color: #f57f17; }
+        .badge.under_review { background: #e3f2fd; color: #1565c0; }
+        .badge.approved     { background: #e8f5e9; color: #2e7d32; }
+        .badge.rejected     { background: #ffebee; color: #c62828; }
+        .badge.active       { background: #e8f5e9; color: #2e7d32; }
+
+        .btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-review { background: #e3f2fd; color: #1565c0; }
+        .btn-review:hover { background: #bbdefb; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px; width: 540px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+        .modal h2 { font-size: 20px; font-weight: 700; color: #0d1b2a; margin-bottom: 20px; }
+        .loan-info { background: #f8f9fa; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .info-item label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+        .info-item span  { font-size: 14px; font-weight: 600; color: #222; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; resize: vertical; font-family: 'Inter', sans-serif; min-height: 80px; }
+        .form-group textarea:focus { border-color: #2196f3; }
+        .status-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .status-btn { flex: 1; min-width: 110px; padding: 11px; border-radius: 8px; border: 2px solid #ddd; background: white; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .status-btn.sel-approved     { border-color: #4caf50; background: #e8f5e9; color: #2e7d32; }
+        .status-btn.sel-under_review { border-color: #2196f3; background: #e3f2fd; color: #1565c0; }
+        .status-btn.sel-rejected     { border-color: #f44336; background: #ffebee; color: #c62828; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+        .btn-cancel { padding: 10px 20px; background: #f5f5f5; color: #555; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-save   { padding: 10px 22px; background: #2196f3; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-save:hover { background: #1565c0; }
+        .msg-box { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; }
+        .msg-box.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .msg-box.error   { background: #ffebee; color: #c62828; display: block; }
+        .empty-state { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Kingsley Bank</h2>
+        <span>Banker Portal</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="banker-dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+        <li><a href="banker-customers.html"><span class="icon">👥</span> My Customers</a></li>
+        <li><a href="banker-loans.html" class="active"><span class="icon">💰</span> Loan Reviews</a></li>
+        <li><a href="banker-kyc.html"><span class="icon">📄</span> KYC Approvals</a></li>
+        <li><a href="banker-deposits.html"><span class="icon">📥</span> Deposit Requests</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">Loan Reviews</div>
+    </div>
+    <div class="content">
+        <div class="toolbar">
+            <button class="filter-btn active" onclick="setFilter('')">All Pending</button>
+            <button class="filter-btn" onclick="setFilter('pending')">⏳ New</button>
+            <button class="filter-btn" onclick="setFilter('under_review')">🔍 Under Review</button>
+            <button class="filter-btn" onclick="setFilter('approved')">✅ Approved</button>
+            <button class="filter-btn" onclick="setFilter('rejected')">❌ Rejected</button>
+        </div>
+
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loan ID</th><th>Applicant</th><th>Type</th>
+                        <th>Amount</th><th>Tenure</th><th>Applied</th><th>Status</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="loansBody">
+                    <tr><td colspan="8" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+        <h2>📋 Loan Review & Decision</h2>
+        <div class="msg-box" id="reviewMsg"></div>
+        <input type="hidden" id="review_id">
+        <div class="loan-info">
+            <div class="info-grid" id="loanInfoGrid"></div>
+        </div>
+        <div class="form-group">
+            <label>Decision</label>
+            <div class="status-row">
+                <button class="status-btn" id="btnApprove"  onclick="selectStatus('approved')">✅ Approve</button>
+                <button class="status-btn" id="btnReview"   onclick="selectStatus('under_review')">🔍 Under Review</button>
+                <button class="status-btn" id="btnReject"   onclick="selectStatus('rejected')">❌ Reject</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Banker Notes / Remarks (required for rejection)</label>
+            <textarea id="review_notes" placeholder="Add your notes, reason for rejection or approval conditions..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save"   onclick="submitDecision()">Submit Decision</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('bankerToken');
+    if (!token) window.location.href = 'banker-login.html';
+
+    let currentFilter = '';
+    let selectedStatus = '';
+
+    function setFilter(f) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        loadLoans();
+    }
+
+    async function loadLoans() {
+        const url = 'http://localhost:5000/api/banker/loans' + (currentFilter ? `?status=${currentFilter}` : '');
+        try {
+            const res  = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` }});
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            const data = await res.json();
+            const tbody = document.getElementById('loansBody');
+            if (!data.success || !data.loans.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">🎉 No loans to review here!</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.loans.map(l => `
+                <tr>
+                    <td><strong style="font-size:12px;">${l.loan_id_str}</strong></td>
+                    <td>${l.full_name}<br><small style="color:#aaa;">${l.mobile||''}</small></td>
+                    <td>${l.loan_type}</td>
+                    <td><strong>₹${Number(l.principal_amount).toLocaleString('en-IN')}</strong></td>
+                    <td>${l.tenure_years} yrs @ ${l.interest_rate}%</td>
+                    <td>${new Date(l.applied_at).toLocaleDateString('en-IN')}</td>
+                    <td><span class="badge ${l.status}">${l.status.replace('_',' ')}</span></td>
+                    <td>
+                        <button class="btn-sm btn-review" onclick='openReview(${JSON.stringify(l).replace(/'/g,"&#39;")})'>📋 Review</button>
+                    </td>
+                </tr>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    function openReview(loan) {
+        document.getElementById('review_id').value    = loan.id;
+        document.getElementById('review_notes').value = loan.banker_notes || '';
+        selectedStatus = '';
+        highlightStatus('');
+        document.getElementById('loanInfoGrid').innerHTML = `
+            <div class="info-item"><label>Loan ID</label><span>${loan.loan_id_str}</span></div>
+            <div class="info-item"><label>Type</label><span>${loan.loan_type}</span></div>
+            <div class="info-item"><label>Customer</label><span>${loan.full_name}</span></div>
+            <div class="info-item"><label>Email</label><span>${loan.email}</span></div>
+            <div class="info-item"><label>Amount</label><span>₹${Number(loan.principal_amount).toLocaleString('en-IN')}</span></div>
+            <div class="info-item"><label>Tenure</label><span>${loan.tenure_years} years @ ${loan.interest_rate}%</span></div>
+            <div class="info-item"><label>Annual Income</label><span>${loan.annual_income ? '₹'+Number(loan.annual_income).toLocaleString('en-IN') : 'N/A'}</span></div>
+            <div class="info-item"><label>Purpose</label><span>${loan.purpose||'N/A'}</span></div>
+            <div class="info-item"><label>Applied On</label><span>${new Date(loan.applied_at).toLocaleDateString('en-IN')}</span></div>
+            <div class="info-item"><label>Current Status</label><span class="badge ${loan.status}">${loan.status.replace('_',' ')}</span></div>
+        `;
+        document.getElementById('reviewMsg').className = 'msg-box';
+        document.getElementById('reviewModal').classList.add('open');
+    }
+
+    function selectStatus(s) { selectedStatus = s; highlightStatus(s); }
+    function highlightStatus(s) {
+        document.getElementById('btnApprove').className = 'status-btn' + (s === 'approved'     ? ' sel-approved'     : '');
+        document.getElementById('btnReview').className  = 'status-btn' + (s === 'under_review'  ? ' sel-under_review' : '');
+        document.getElementById('btnReject').className  = 'status-btn' + (s === 'rejected'      ? ' sel-rejected'     : '');
+    }
+
+    async function submitDecision() {
+        const id    = document.getElementById('review_id').value;
+        const notes = document.getElementById('review_notes').value;
+        const msg   = document.getElementById('reviewMsg');
+        if (!selectedStatus) { msg.textContent = 'Please select a decision!'; msg.className = 'msg-box error'; return; }
+        if (selectedStatus === 'rejected' && !notes.trim()) { msg.textContent = 'Please enter a reason for rejection.'; msg.className = 'msg-box error'; return; }
+        try {
+            const res = await fetch(`http://localhost:5000/api/banker/loans/${id}/review`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: selectedStatus, banker_notes: notes })
+            });
+            const data = await res.json();
+            if (data.success) {
+                msg.textContent = '✅ ' + data.message;
+                msg.className = 'msg-box success';
+                setTimeout(() => { closeModal(); loadLoans(); }, 1200);
+            } else {
+                msg.textContent = data.message || 'Error occurred';
+                msg.className = 'msg-box error';
+            }
+        } catch (e) { alert('Server error'); }
+    }
+
+    function closeModal() { document.getElementById('reviewModal').classList.remove('open'); }
+    function logout() { localStorage.removeItem('bankerToken'); localStorage.removeItem('bankerName'); window.location.href = 'banker-login.html'; }
+
+    document.getElementById('reviewModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('reviewModal')) closeModal();
+    });
+
+    loadLoans();
+</script>
+</body>
+</html>

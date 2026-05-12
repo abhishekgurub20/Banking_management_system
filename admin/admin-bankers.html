@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Bankers | Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #1a1a2e; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-logo { padding: 24px 20px; background: linear-gradient(135deg,#e91e63,#c2185b); text-align: center; }
+        .sidebar-logo h2 { font-size: 20px; font-weight: 700; }
+        .sidebar-logo span { font-size: 11px; opacity: 0.85; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-links { list-style: none; padding: 16px 0; flex: 1; }
+        .nav-links li a { display: flex; align-items: center; gap: 12px; padding: 13px 24px; color: #a0a0c0; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(233,30,99,0.12); color: #fff; border-left-color: #e91e63; }
+        .nav-links li a .icon { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid #2e2e48; }
+        .logout-btn { width: 100%; padding: 11px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .topbar-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+        .content { padding: 28px 32px; }
+        .btn-primary { padding: 9px 18px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-primary:hover { background: #c2185b; }
+
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #1a1a2e; color: #a0a0c0; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        tbody td { padding: 13px 16px; font-size: 13px; color: #444; border-bottom: 1px solid #f5f5f5; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #fafafa; }
+
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+        .badge.active   { background: #e8f5e9; color: #2e7d32; }
+        .badge.blocked  { background: #ffebee; color: #c62828; }
+        .badge.inactive { background: #fff3e0; color: #e65100; }
+
+        .action-btns { display: flex; gap: 6px; }
+        .btn-sm { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-block   { background: #fff3e0; color: #e65100; }
+        .btn-block:hover { background: #ffe0b2; }
+        .btn-unblock { background: #e8f5e9; color: #2e7d32; }
+        .btn-unblock:hover { background: #c8e6c9; }
+        .btn-delete  { background: #ffebee; color: #c62828; }
+        .btn-delete:hover { background: #ffcdd2; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px; width: 500px; max-width: 95vw; }
+        .modal h2 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #e91e63; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn-cancel { padding: 10px 20px; background: #f5f5f5; color: #555; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-save   { padding: 10px 20px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .msg-box { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+        .msg-box.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .msg-box.error   { background: #ffebee; color: #c62828; display: block; }
+        .empty-state { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Kingsley Bank</h2>
+        <span>Admin Portal</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+        <li><a href="admin-users.html"><span class="icon">👥</span> Manage Users</a></li>
+        <li><a href="admin-bankers.html" class="active"><span class="icon">🏦</span> Manage Bankers</a></li>
+        <li><a href="admin-loans.html"><span class="icon">💰</span> Loan Applications</a></li>
+        <li><a href="admin-transactions.html"><span class="icon">💳</span> Transactions</a></li>
+        <li><a href="admin-deposits.html"><span class="icon">📥</span> Deposit Approvals</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">Banker Management</div>
+        <button class="btn-primary" onclick="openAddModal()">+ Add New Banker</button>
+    </div>
+    <div class="content">
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Name</th><th>Email</th><th>Mobile</th>
+                        <th>Loans Reviewed</th><th>Status</th><th>Joined</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bankersBody">
+                    <tr><td colspan="8" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Banker Modal -->
+<div class="modal-overlay" id="addModal">
+    <div class="modal">
+        <h2>🏦 Add New Banker</h2>
+        <div class="msg-box" id="addMsg"></div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="b_fullName" placeholder="Jane Doe">
+            </div>
+            <div class="form-group">
+                <label>Username *</label>
+                <input type="text" id="b_username" placeholder="janedoe">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="b_email" placeholder="jane@kingsleybank.com">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Mobile *</label>
+                <input type="text" id="b_mobile" placeholder="+91 8888888888">
+            </div>
+            <div class="form-group">
+                <label>Password *</label>
+                <input type="password" id="b_password" placeholder="Secure password">
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" onclick="addBanker()">Create Account</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('adminToken');
+    if (!token) window.location.href = 'admin-login.html';
+
+    async function loadBankers() {
+        try {
+            const res  = await fetch('http://localhost:5000/api/admin/bankers', { headers: { 'Authorization': `Bearer ${token}` }});
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            const data = await res.json();
+            const tbody = document.getElementById('bankersBody');
+            if (!data.success || !data.bankers.length) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No bankers found. Add one!</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.bankers.map(b => `
+                <tr>
+                    <td>${b.id}</td>
+                    <td><strong>${b.full_name}</strong><br><small style="color:#aaa;">${b.username}</small></td>
+                    <td>${b.email}</td>
+                    <td>${b.mobile || '—'}</td>
+                    <td style="text-align:center;"><strong>${b.reviewed_loans}</strong></td>
+                    <td><span class="badge ${b.status}">${b.status}</span></td>
+                    <td>${new Date(b.created_at).toLocaleDateString('en-IN')}</td>
+                    <td>
+                        <div class="action-btns">
+                            ${b.status === 'blocked'
+                                ? `<button class="btn-sm btn-unblock" onclick="toggleStatus(${b.id},'active')">✅ Unblock</button>`
+                                : `<button class="btn-sm btn-block"   onclick="toggleStatus(${b.id},'blocked')">🚫 Block</button>`}
+                            <button class="btn-sm btn-delete" onclick="deleteBanker(${b.id}, '${b.full_name}')">🗑️ Remove</button>
+                        </div>
+                    </td>
+                </tr>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function toggleStatus(id, status) {
+        if (!confirm(`Change banker status to "${status}"?`)) return;
+        try {
+            const res = await fetch(`http://localhost:5000/api/admin/users/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            });
+            const data = await res.json();
+            if (data.success) loadBankers();
+            else alert(data.message);
+        } catch (e) { alert('Error'); }
+    }
+
+    async function deleteBanker(id, name) {
+        if (!confirm(`Remove banker "${name}"? This cannot be undone!`)) return;
+        try {
+            const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) loadBankers();
+            else alert(data.message);
+        } catch (e) { alert('Error'); }
+    }
+
+    function openAddModal() {
+        ['b_fullName','b_username','b_email','b_mobile','b_password'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('addMsg').className = 'msg-box';
+        document.getElementById('addModal').classList.add('open');
+    }
+
+    async function addBanker() {
+        const body = {
+            fullName: document.getElementById('b_fullName').value,
+            username: document.getElementById('b_username').value,
+            email:    document.getElementById('b_email').value,
+            mobile:   document.getElementById('b_mobile').value,
+            password: document.getElementById('b_password').value
+        };
+        const msg = document.getElementById('addMsg');
+        try {
+            const res = await fetch('http://localhost:5000/api/admin/add-banker', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (data.success) {
+                msg.textContent = '✅ Banker account created!';
+                msg.className = 'msg-box success';
+                setTimeout(() => { closeModal(); loadBankers(); }, 1200);
+            } else {
+                msg.textContent = data.message || 'Failed';
+                msg.className = 'msg-box error';
+            }
+        } catch(e) { alert('Server error'); }
+    }
+
+    function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+    function logout() { localStorage.removeItem('adminToken'); localStorage.removeItem('adminName'); window.location.href = 'admin-login.html'; }
+
+    document.getElementById('addModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('addModal')) closeModal();
+    });
+
+    loadBankers();
+</script>
+</body>
+</html>

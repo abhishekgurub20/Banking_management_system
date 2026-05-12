@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Customers | Banker Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #0d1b2a; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-logo { padding: 24px 20px; background: linear-gradient(135deg,#2196f3,#1565c0); text-align: center; }
+        .sidebar-logo h2 { font-size: 20px; font-weight: 700; }
+        .sidebar-logo span { font-size: 11px; opacity: 0.85; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-links { list-style: none; padding: 16px 0; flex: 1; }
+        .nav-links li a { display: flex; align-items: center; gap: 12px; padding: 13px 24px; color: #7a90a4; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(33,150,243,0.12); color: #fff; border-left-color: #2196f3; }
+        .nav-links li a .icon { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid #1e3048; }
+        .logout-btn { width: 100%; padding: 11px; background: #f44336; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .topbar-title { font-size: 20px; font-weight: 700; color: #0d1b2a; }
+        .content { padding: 28px 32px; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-box { padding: 9px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; width: 260px; outline: none; }
+        .search-box:focus { border-color: #2196f3; }
+
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #0d1b2a; color: #7a90a4; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        tbody td { padding: 13px 16px; font-size: 13px; color: #444; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #f9fbff; }
+
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+        .badge.verified { background: #e8f5e9; color: #2e7d32; }
+        .badge.pending  { background: #fff8e1; color: #f57f17; }
+        .badge.rejected { background: #ffebee; color: #c62828; }
+        .badge.active   { background: #e8f5e9; color: #2e7d32; }
+        .badge.blocked  { background: #ffebee; color: #c62828; }
+
+        .btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; background: #e3f2fd; color: #1565c0; }
+        .btn-sm:hover { background: #bbdefb; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px; width: 600px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+        .modal h2 { font-size: 20px; font-weight: 700; color: #0d1b2a; margin-bottom: 20px; }
+        .section-title { font-size: 14px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3f2fd; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8f9fa; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+        .info-item label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 3px; font-weight: 600; }
+        .info-item span  { font-size: 13px; font-weight: 600; color: #222; }
+        .accounts-list { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .account-card { flex: 1; min-width: 180px; background: linear-gradient(135deg, #2196f3, #1565c0); border-radius: 10px; padding: 16px; color: white; }
+        .account-card .acc-type { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.8px; }
+        .account-card .acc-num  { font-size: 13px; font-family: monospace; margin: 4px 0; }
+        .account-card .acc-bal  { font-size: 22px; font-weight: 700; }
+        .loans-mini { width: 100%; border-collapse: collapse; }
+        .loans-mini th { font-size: 12px; color: #888; padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
+        .loans-mini td { font-size: 13px; padding: 8px; border-bottom: 1px solid #f5f5f5; }
+        .modal-close { margin-top: 16px; text-align: right; }
+        .btn-close { padding: 10px 24px; background: #f5f5f5; color: #555; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .empty-state { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+        .loading-modal { text-align: center; padding: 30px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Kingsley Bank</h2>
+        <span>Banker Portal</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="banker-dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+        <li><a href="banker-customers.html" class="active"><span class="icon">👥</span> My Customers</a></li>
+        <li><a href="banker-loans.html"><span class="icon">💰</span> Loan Reviews</a></li>
+        <li><a href="banker-kyc.html"><span class="icon">📄</span> KYC Approvals</a></li>
+        <li><a href="banker-deposits.html"><span class="icon">📥</span> Deposit Requests</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">Customer Directory</div>
+        <div id="custCount" style="font-size:14px; color:#888;"></div>
+    </div>
+
+    <div class="content">
+        <div class="toolbar">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search name, email, mobile..." oninput="loadCustomers()">
+        </div>
+
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Name</th><th>Email</th><th>Mobile</th>
+                        <th>Accounts</th><th>KYC</th><th>Status</th><th>Joined</th><th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="customersBody">
+                    <tr><td colspan="9" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Profile Modal -->
+<div class="modal-overlay" id="profileModal">
+    <div class="modal">
+        <h2>👤 Customer Profile</h2>
+        <div id="profileContent"><div class="loading-modal">Loading profile...</div></div>
+        <div class="modal-close">
+            <button class="btn-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('bankerToken');
+    if (!token) window.location.href = 'banker-login.html';
+
+    async function loadCustomers() {
+        const search = document.getElementById('searchInput').value;
+        let url = 'http://localhost:5000/api/banker/customers';
+        if (search) url += `?search=${encodeURIComponent(search)}`;
+        try {
+            const res  = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` }});
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            const data = await res.json();
+            const tbody = document.getElementById('customersBody');
+            if (!data.success || !data.customers.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No customers found.</td></tr>';
+                document.getElementById('custCount').textContent = '0 customers';
+                return;
+            }
+            document.getElementById('custCount').textContent = `${data.customers.length} customers`;
+            tbody.innerHTML = data.customers.map(c => `
+                <tr>
+                    <td>${c.id}</td>
+                    <td><strong>${c.full_name}</strong></td>
+                    <td>${c.email}</td>
+                    <td>${c.mobile||'—'}</td>
+                    <td style="text-align:center;">${c.account_count}</td>
+                    <td><span class="badge ${c.kyc_status}">${c.kyc_status}</span></td>
+                    <td><span class="badge ${c.status}">${c.status}</span></td>
+                    <td>${new Date(c.created_at).toLocaleDateString('en-IN')}</td>
+                    <td><button class="btn-sm" onclick="viewProfile(${c.id})">👁️ View</button></td>
+                </tr>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    async function viewProfile(id) {
+        document.getElementById('profileContent').innerHTML = '<div class="loading-modal">Loading profile...</div>';
+        document.getElementById('profileModal').classList.add('open');
+        try {
+            const res  = await fetch(`http://localhost:5000/api/banker/customers/${id}`, { headers: { 'Authorization': `Bearer ${token}` }});
+            const data = await res.json();
+            if (!data.success) { document.getElementById('profileContent').innerHTML = '<p style="color:red;">Failed to load</p>'; return; }
+
+            const c = data.customer;
+            const accountsHtml = data.accounts.length
+                ? `<div class="accounts-list">${data.accounts.map(a => `
+                    <div class="account-card">
+                        <div class="acc-type">${a.account_type} Account</div>
+                        <div class="acc-num">${a.account_number}</div>
+                        <div class="acc-bal">₹${Number(a.balance).toLocaleString('en-IN')}</div>
+                        <div style="font-size:11px;opacity:0.7;margin-top:4px;">Opened: ${a.opened_date ? new Date(a.opened_date).toLocaleDateString('en-IN') : '—'}</div>
+                    </div>`).join('')}</div>`
+                : '<p style="color:#bbb;font-size:13px;">No accounts found.</p>';
+
+            const loansHtml = data.loans.length
+                ? `<table class="loans-mini">
+                    <thead><tr><th>Loan ID</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>${data.loans.map(l => `
+                        <tr>
+                            <td style="font-size:12px;">${l.loan_id_str}</td>
+                            <td>${l.loan_type}</td>
+                            <td>₹${Number(l.principal_amount).toLocaleString('en-IN')}</td>
+                            <td><span class="badge ${l.status}">${l.status.replace('_',' ')}</span></td>
+                        </tr>`).join('')}
+                    </tbody></table>`
+                : '<p style="color:#bbb;font-size:13px;">No loan applications.</p>';
+
+            document.getElementById('profileContent').innerHTML = `
+                <div class="section-title">Personal Information</div>
+                <div class="profile-grid">
+                    <div class="info-item"><label>Full Name</label><span>${c.full_name}</span></div>
+                    <div class="info-item"><label>Username</label><span>${c.username}</span></div>
+                    <div class="info-item"><label>Email</label><span>${c.email}</span></div>
+                    <div class="info-item"><label>Mobile</label><span>${c.mobile||'—'}</span></div>
+                    <div class="info-item"><label>Gender</label><span>${c.gender||'—'}</span></div>
+                    <div class="info-item"><label>Date of Birth</label><span>${c.dob ? new Date(c.dob).toLocaleDateString('en-IN') : '—'}</span></div>
+                    <div class="info-item"><label>Occupation</label><span>${c.occupation||'—'}</span></div>
+                    <div class="info-item"><label>Annual Income</label><span>${c.annual_income ? '₹'+Number(c.annual_income).toLocaleString('en-IN') : '—'}</span></div>
+                    <div class="info-item"><label>Address</label><span>${c.address||'—'}</span></div>
+                    <div class="info-item"><label>KYC Status</label><span class="badge ${c.kyc_status}">${c.kyc_status}</span></div>
+                    <div class="info-item"><label>Account Status</label><span class="badge ${c.status}">${c.status}</span></div>
+                    <div class="info-item"><label>Member Since</label><span>${new Date(c.created_at).toLocaleDateString('en-IN')}</span></div>
+                </div>
+
+                <div class="section-title" style="margin-top:20px;">Bank Accounts</div>
+                ${accountsHtml}
+
+                <div class="section-title" style="margin-top:20px;">Loan History</div>
+                ${loansHtml}
+            `;
+        } catch (e) { document.getElementById('profileContent').innerHTML = '<p style="color:red;">Error loading profile.</p>'; }
+    }
+
+    function closeModal() { document.getElementById('profileModal').classList.remove('open'); }
+    function logout() { localStorage.removeItem('bankerToken'); localStorage.removeItem('bankerName'); window.location.href = 'banker-login.html'; }
+
+    document.getElementById('profileModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('profileModal')) closeModal();
+    });
+
+    loadCustomers();
+</script>
+</body>
+</html>

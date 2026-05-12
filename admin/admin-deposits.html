@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deposit Approvals | Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: #1a1a2e; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10; }
+        .sidebar-logo { padding: 24px 20px; background: linear-gradient(135deg,#e91e63,#c2185b); text-align: center; }
+        .sidebar-logo h2 { font-size: 20px; font-weight: 700; }
+        .sidebar-logo span { font-size: 11px; opacity: 0.85; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-links { list-style: none; padding: 16px 0; flex: 1; }
+        .nav-links li a { display: flex; align-items: center; gap: 12px; padding: 13px 24px; color: #a0a0c0; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-links li a:hover, .nav-links li a.active { background: rgba(233,30,99,0.12); color: #fff; border-left-color: #e91e63; }
+        .nav-links li a .icon { font-size: 18px; width: 22px; text-align: center; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid #2e2e48; }
+        .logout-btn { width: 100%; padding: 11px; background: #e91e63; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; }
+        .topbar { background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .topbar-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+        .content { padding: 28px 32px; }
+
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 18px; border-radius: 20px; border: 2px solid #ddd; background: white; font-size: 13px; font-weight: 600; cursor: pointer; color: #666; transition: all 0.2s; }
+        .filter-btn.active, .filter-btn:hover { border-color: #e91e63; color: #e91e63; background: #fce4ec; }
+
+        .panel { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { background: #1a1a2e; color: #a0a0c0; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        tbody td { padding: 13px 16px; font-size: 13px; color: #444; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: #fafafa; }
+
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: capitalize; }
+        .badge.pending  { background: #fff8e1; color: #f57f17; }
+        .badge.approved { background: #e8f5e9; color: #2e7d32; }
+        .badge.rejected { background: #ffebee; color: #c62828; }
+
+        .action-btns { display: flex; gap: 6px; }
+        .btn-sm { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-approve { background: #e8f5e9; color: #2e7d32; }
+        .btn-approve:hover { background: #c8e6c9; }
+        .btn-reject  { background: #ffebee; color: #c62828; }
+        .btn-reject:hover  { background: #ffcdd2; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.55); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px; width: 500px; max-width: 95vw; max-height: 90vh; overflow-y: auto; }
+        .modal h2 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 16px; }
+        .deposit-info { background: #f8f9fa; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+        .deposit-info p { font-size: 13px; color: #555; margin-bottom: 8px; }
+        .deposit-info p strong { color: #222; min-width: 120px; display: inline-block; }
+        .deposit-info .amount-big { font-size: 28px; font-weight: 700; color: #e91e63; margin: 8px 0; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
+        .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; resize: vertical; font-family: 'Inter', sans-serif; min-height: 70px; }
+        .form-group textarea:focus { border-color: #e91e63; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
+        .btn-cancel  { padding: 10px 20px; background: #f5f5f5; color: #555; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-approve-big { padding: 10px 22px; background: #4caf50; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .btn-reject-big  { padding: 10px 22px; background: #f44336; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .msg-box { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 14px; display: none; }
+        .msg-box.success { background: #e8f5e9; color: #2e7d32; display: block; }
+        .msg-box.error   { background: #ffebee; color: #c62828; display: block; }
+        .empty-state { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+        .alert-banner { background: #fff3e0; border: 1px solid #ffcc80; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; color: #e65100; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <h2>Kingsley Bank</h2>
+        <span>Admin Portal</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="admin-dashboard.html"><span class="icon">📊</span> Dashboard</a></li>
+        <li><a href="admin-users.html"><span class="icon">👥</span> Manage Users</a></li>
+        <li><a href="admin-bankers.html"><span class="icon">🏦</span> Manage Bankers</a></li>
+        <li><a href="admin-loans.html"><span class="icon">💰</span> Loan Applications</a></li>
+        <li><a href="admin-transactions.html"><span class="icon">💳</span> Transactions</a></li>
+        <li><a href="admin-deposits.html" class="active"><span class="icon">📥</span> Deposit Approvals</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <div class="topbar-title">Deposit Request Approvals</div>
+        <div id="pendingCount" style="font-size:14px;color:#e91e63;font-weight:600;"></div>
+    </div>
+
+    <div class="content">
+        <div class="alert-banner" id="alertBanner" style="display:none;">
+            ⚠️ There are pending deposit requests from bankers waiting for your approval. Please review them promptly.
+        </div>
+
+        <div class="toolbar">
+            <button class="filter-btn active" onclick="setFilter('')">All</button>
+            <button class="filter-btn" onclick="setFilter('pending')">⏳ Pending</button>
+            <button class="filter-btn" onclick="setFilter('approved')">✅ Approved</button>
+            <button class="filter-btn" onclick="setFilter('rejected')">❌ Rejected</button>
+        </div>
+
+        <div class="panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Customer</th><th>Account</th><th>Amount</th>
+                        <th>Reason</th><th>Requested By</th><th>Date</th><th>Status</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="depositsBody">
+                    <tr><td colspan="9" class="empty-state">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+        <h2>📥 Deposit Request Review</h2>
+        <div class="msg-box" id="reviewMsg"></div>
+        <input type="hidden" id="review_id">
+        <div class="deposit-info" id="depositInfo"></div>
+        <div class="form-group">
+            <label>Admin Notes / Reason (optional for approval, required for rejection)</label>
+            <textarea id="admin_notes" placeholder="Add notes or reason..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-reject-big"  onclick="submitDecision('reject')">❌ Reject</button>
+            <button class="btn-approve-big" onclick="submitDecision('approve')">✅ Approve & Credit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('adminToken');
+    if (!token) window.location.href = 'admin-login.html';
+
+    let currentFilter = '';
+
+    function setFilter(f) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        loadDeposits();
+    }
+
+    async function loadDeposits() {
+        const url = 'http://localhost:5000/api/admin/deposit-requests' + (currentFilter ? `?status=${currentFilter}` : '');
+        try {
+            const res  = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` }});
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            const data = await res.json();
+            const tbody = document.getElementById('depositsBody');
+            const pending = (data.requests || []).filter(r => r.status === 'pending').length;
+
+            document.getElementById('pendingCount').textContent = pending > 0 ? `${pending} pending` : '';
+            document.getElementById('alertBanner').style.display = pending > 0 ? 'block' : 'none';
+
+            if (!data.success || !data.requests.length) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No deposit requests found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.requests.map(r => `
+                <tr>
+                    <td>#${r.id}</td>
+                    <td><strong>${r.customer_name}</strong><br><small style="color:#aaa;">${r.customer_email}</small></td>
+                    <td style="font-size:12px;">${r.account_number}<br><small style="color:#aaa;">${r.account_type}</small></td>
+                    <td><strong style="color:#e91e63;font-size:16px;">₹${Number(r.amount).toLocaleString('en-IN')}</strong></td>
+                    <td style="max-width:180px;">${r.reason}</td>
+                    <td>${r.banker_name}</td>
+                    <td>${new Date(r.created_at).toLocaleDateString('en-IN')}</td>
+                    <td><span class="badge ${r.status}">${r.status}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            ${r.status === 'pending' ? `
+                                <button class="btn-sm btn-approve" onclick='openReview(${JSON.stringify(r).replace(/'/g,"&#39;")})'>Review</button>
+                            ` : `<span style="color:#bbb;font-size:12px;">${r.admin_notes || 'Processed'}</span>`}
+                        </div>
+                    </td>
+                </tr>`).join('');
+        } catch (e) { console.error(e); }
+    }
+
+    function openReview(r) {
+        document.getElementById('review_id').value = r.id;
+        document.getElementById('admin_notes').value = '';
+        document.getElementById('reviewMsg').className = 'msg-box';
+        document.getElementById('depositInfo').innerHTML = `
+            <p><strong>Customer:</strong> ${r.customer_name} (${r.customer_email})</p>
+            <p><strong>Account:</strong> ${r.account_number} (${r.account_type})</p>
+            <p><strong>Current Balance:</strong> ₹${Number(r.current_balance).toLocaleString('en-IN')}</p>
+            <div class="amount-big">₹${Number(r.amount).toLocaleString('en-IN')}</div>
+            <p><strong>Reason:</strong> ${r.reason}</p>
+            <p><strong>Requested by:</strong> ${r.banker_name}</p>
+            <p><strong>Requested on:</strong> ${new Date(r.created_at).toLocaleString('en-IN')}</p>
+        `;
+        document.getElementById('reviewModal').classList.add('open');
+    }
+
+    async function submitDecision(action) {
+        const id    = document.getElementById('review_id').value;
+        const notes = document.getElementById('admin_notes').value;
+        const msg   = document.getElementById('reviewMsg');
+        if (action === 'reject' && !notes.trim()) {
+            msg.textContent = 'Please enter a reason for rejection.';
+            msg.className = 'msg-box error';
+            return;
+        }
+        try {
+            const res = await fetch(`http://localhost:5000/api/admin/deposit-requests/${id}/${action}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_notes: notes })
+            });
+            const data = await res.json();
+            if (data.success) {
+                msg.textContent = '✅ ' + data.message + (data.referenceNumber ? ` Ref: ${data.referenceNumber}` : '');
+                msg.className = 'msg-box success';
+                setTimeout(() => { closeModal(); loadDeposits(); }, 1800);
+            } else {
+                msg.textContent = data.message || 'Error';
+                msg.className = 'msg-box error';
+            }
+        } catch (e) { alert('Server error'); }
+    }
+
+    function closeModal() { document.getElementById('reviewModal').classList.remove('open'); }
+    function logout() { localStorage.removeItem('adminToken'); localStorage.removeItem('adminName'); window.location.href = 'admin-login.html'; }
+
+    document.getElementById('reviewModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('reviewModal')) closeModal();
+    });
+
+    loadDeposits();
+</script>
+</body>
+</html>

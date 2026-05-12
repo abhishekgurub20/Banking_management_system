@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kingsley Private Bank | Admin Login</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .container { width: 400px; background-color: white; padding: 30px; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .logo { text-align: center; margin-bottom: 20px; }
+        .logo h1 { margin: 0; color: #e91e63; }
+        .logo span { color: #555; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #666; font-size: 14px; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 10px; background-color: #e91e63; border: none; color: white; cursor: pointer; border-radius: 4px; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        .btn:hover { background-color: #c2185b; }
+        .msg { display: none; padding: 10px; border-radius: 4px; font-size: 13px; margin-bottom: 15px; text-align: center; }
+        .msg.error { background: #fce4ec; color: #c62828; border: 1px solid #f5c6c6; display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">
+        <h1>Kingsley Bank</h1>
+        <span>Admin Portal</span>
+    </div>
+    <h2>Admin Login</h2>
+    <div id="login-msg" class="msg"></div>
+    <form id="adminLoginForm">
+        <div class="form-group">
+            <label>Admin Username</label>
+            <input type="text" id="username" required>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn">Secure Login</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const msg = document.getElementById('login-msg');
+
+        try {
+            const res = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success && data.role === 'admin') {
+                localStorage.setItem('adminToken', data.token);
+                localStorage.setItem('adminName', data.name);
+                window.location.href = 'admin-dashboard.html';
+            } else if (data.success) {
+                msg.className = 'msg error';
+                msg.textContent = 'Access Denied: You are not an admin.';
+            } else {
+                msg.className = 'msg error';
+                msg.textContent = data.message || 'Login failed';
+            }
+        } catch (err) {
+            msg.className = 'msg error';
+            msg.textContent = 'Server connection error';
+        }
+    });
+
+    // Check if already logged in
+    if(localStorage.getItem('adminToken')) {
+        window.location.href = 'admin-dashboard.html';
+    }
+</script>
+
+</body>
+</html>
